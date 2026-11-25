@@ -13,6 +13,9 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
+    <!-- Parent style for Text.* (AAPT requires the implicit parent to exist). -->
+    <style name="Text" />
+
     <style name="Text.ScreenTitle">
         <item name="android:textSize">68sp</item>
         <item name="android:textStyle">bold</item>
