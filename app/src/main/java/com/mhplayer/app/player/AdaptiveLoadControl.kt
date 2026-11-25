@@ -3,15 +3,15 @@ package com.mhplayer.app.player
 import android.os.SystemClock
 import androidx.media3.common.C
 import androidx.media3.common.Timeline
-import androidx.media3.common.TrackGroupArray
+import androidx.media3.exoplayer.source.TrackGroupArray
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.MediaSource
+import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.LoadControl
 import androidx.media3.exoplayer.analytics.PlayerId
 import androidx.media3.exoplayer.trackselection.ExoTrackSelection
 import androidx.media3.exoplayer.upstream.Allocator
 import androidx.media3.exoplayer.upstream.DefaultAllocator
-import androidx.media3.exoplayer.upstream.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultLoadControl
 
 /**
  * [LoadControl] wrapper around [DefaultLoadControl] that implements the adaptive
@@ -66,7 +66,7 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
         private const val VOD_BACK_BUFFER_MS = 60_000
     }
 
-    private val allocator: Allocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE)
+    private val allocator: DefaultAllocator = DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE)
     private val lock = Any()
 
     @Volatile
@@ -131,7 +131,7 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
                     LIVE_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS,
                 )
                 .setPrioritizeTimeOverSizeThresholds(true)
-                .setBackBufferDurationMs(LIVE_BACK_BUFFER_MS)
+                .setBackBuffer(LIVE_BACK_BUFFER_MS, false)
                 .build()
         } else {
             DefaultLoadControl.Builder()
@@ -143,7 +143,7 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
                     VOD_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS,
                 )
                 .setPrioritizeTimeOverSizeThresholds(true)
-                .setBackBufferDurationMs(VOD_BACK_BUFFER_MS)
+                .setBackBuffer(VOD_BACK_BUFFER_MS, false)
                 .build()
         }
     }
