@@ -5,28 +5,28 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:background="@color/color_background"
-    android:padding="16dp">
+    android:padding="@dimen/screen_padding">
 
     <com.mhplayer.app.ui.SidebarView
         android:id="@+id/sidebar"
-        android:layout_width="230dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent" />
 
     <!-- Bouquets column -->
     <LinearLayout
-        android:layout_width="194dp"
+        android:layout_width="@dimen/bouquet_column_width"
         android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/column_gap"
         android:orientation="vertical"
         android:background="@color/color_panel_dark">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginStart="@dimen/content_margin"
+            android:layout_marginTop="@dimen/form_margin_top"
             android:text="Bouquets"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_column_title"
             android:textStyle="bold"
             android:textColor="@color/color_text_primary" />
 
@@ -35,25 +35,25 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/form_gap"
             android:nextFocusRight="@+id/channelList" />
     </LinearLayout>
 
     <!-- Chaînes column -->
     <LinearLayout
-        android:layout_width="202dp"
+        android:layout_width="@dimen/channel_column_width"
         android:layout_height="match_parent"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/column_gap"
         android:orientation="vertical"
         android:background="@color/color_panel_mid">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginStart="@dimen/content_margin"
+            android:layout_marginTop="@dimen/form_margin_top"
             android:text="Chaînes"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_column_title"
             android:textStyle="bold"
             android:textColor="@color/color_text_primary" />
 
@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/form_gap"
             android:nextFocusLeft="@+id/bouquetList"
             android:nextFocusRight="@+id/videoContainer" />
     </LinearLayout>
@@ -72,7 +72,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/column_gap"
         android:orientation="vertical"
         android:background="@color/color_panel_video">
 
@@ -81,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/video_margin"
             android:background="@drawable/bg_card"
             android:focusable="true"
             android:clickable="true"
@@ -113,13 +113,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp">
+            android:paddingStart="@dimen/mini_row_padding"
+            android:paddingEnd="@dimen/mini_row_padding">
 
             <ImageView
                 android:id="@+id/miniPlayButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="@dimen/mini_play_size"
+                android:layout_height="@dimen/mini_play_size"
                 android:background="@color/color_focus_bg"
                 android:padding="6dp"
                 android:src="@drawable/ic_play"
@@ -131,9 +131,9 @@
                 android:id="@+id/miniCurrentTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/form_gap"
                 android:text="00:00"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_mini_time"
                 android:textColor="@color/color_text_primary" />
 
             <View
@@ -146,14 +146,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="—"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_mini_time"
                 android:textColor="@color/color_text_primary" />
 
             <ImageView
                 android:id="@+id/miniVolumeButton"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_marginStart="24dp"
+                android:layout_width="@dimen/mini_icon_size"
+                android:layout_height="@dimen/mini_icon_size"
+                android:layout_marginStart="@dimen/form_margin_top"
                 android:src="@drawable/ic_volume"
                 android:focusable="true"
                 android:clickable="true"
@@ -161,9 +161,9 @@
 
             <ImageView
                 android:id="@+id/miniFullscreenButton"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_marginStart="24dp"
+                android:layout_width="@dimen/mini_icon_size"
+                android:layout_height="@dimen/mini_icon_size"
+                android:layout_marginStart="@dimen/form_margin_top"
                 android:src="@drawable/ic_fullscreen"
                 android:focusable="true"
                 android:clickable="true"
@@ -175,16 +175,19 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="16dp"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp">
+            android:layout_marginTop="@dimen/form_gap"
+            android:paddingStart="@dimen/content_margin"
+            android:paddingEnd="@dimen/content_margin">
 
             <TextView
                 android:id="@+id/channelTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:text="Sport 1"
-                android:textSize="56sp"
+                android:textSize="@dimen/text_channel_title"
                 android:textStyle="bold"
                 android:textColor="@color/color_text_primary" />
 
@@ -192,14 +195,14 @@
                 android:id="@+id/liveBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="@dimen/form_margin_top"
                 android:background="@drawable/bg_badge"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:text="EN DIRECT"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_badge"
                 android:textStyle="bold"
                 android:textColor="@color/color_text_primary" />
         </LinearLayout>
@@ -208,11 +211,11 @@
             android:id="@+id/channelSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"
-            android:paddingStart="24dp"
+            android:layout_marginTop="@dimen/form_gap"
+            android:layout_marginBottom="@dimen/form_margin_top"
+            android:paddingStart="@dimen/content_margin"
             android:text="Match de football"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_body"
             android:textColor="@color/color_text_secondary" />
 
         <TextView
@@ -221,7 +224,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Aucun contenu"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_empty"
             android:textColor="@color/color_text_muted"
             android:visibility="gone" />
     </LinearLayout>

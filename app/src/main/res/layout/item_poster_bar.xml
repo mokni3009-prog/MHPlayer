@@ -11,19 +11,19 @@
 
     <ImageView
         android:id="@+id/posterImage"
-        android:layout_width="137dp"
-        android:layout_height="188dp"
+        android:layout_width="@dimen/poster_width_land"
+        android:layout_height="@dimen/poster_height_land"
         android:scaleType="centerCrop"
         android:background="@drawable/poster_placeholder"
         android:contentDescription="@null" />
 
     <TextView
         android:id="@+id/posterTitle"
-        android:layout_width="137dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/poster_width_land"
+        android:layout_height="@dimen/episode_label_height"
         android:gravity="center"
         android:background="@drawable/bg_episode_label"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_poster_title"
         android:textStyle="bold"
         android:textColor="@color/color_text_primary"
         android:maxLines="1"

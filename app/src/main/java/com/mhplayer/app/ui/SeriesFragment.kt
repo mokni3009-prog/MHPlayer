@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mhplayer.app.MainActivity
+import com.mhplayer.app.R
 import com.mhplayer.app.app
 import com.mhplayer.app.data.model.SeriesItem
 import com.mhplayer.app.databinding.FragmentSeriesBinding
@@ -65,7 +66,7 @@ class SeriesFragment : Fragment() {
         binding.chipList.adapter = ChipAdapter(chips) { chip -> applyFilter(chip) }
 
         binding.gridList.layoutManager =
-            GridLayoutManager(requireContext(), if (portrait) 3 else 6)
+            GridLayoutManager(requireContext(), gridSpanCount())
         binding.gridList.adapter = posterAdapter
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -74,6 +75,24 @@ class SeriesFragment : Fragment() {
             applyFilter("Toutes")
             FocusHelper.requestFocus(binding.gridList)
         }
+    }
+
+
+    /**
+     * Grid columns that fit the screen (v1.3): poster width + gap from the
+     * screen-size dimens buckets, capped at the 6 columns of the approved
+     * mockup. A fixed 6 clipped posters on narrow phones (6 x 137dp).
+     */
+    private fun gridSpanCount(): Int {
+        val metrics = resources.displayMetrics
+        val widthDp = metrics.widthPixels / metrics.density
+        val sidebarDp = resources.getDimension(R.dimen.sidebar_width) / metrics.density
+        val paddingDp = (resources.getDimension(R.dimen.content_margin_left)
+            + resources.getDimension(R.dimen.content_margin)) / metrics.density
+        val availableDp = widthDp - sidebarDp - paddingDp
+        val posterDp = resources.getDimension(R.dimen.poster_width_land) / metrics.density
+        val gapDp = resources.getDimension(R.dimen.grid_gap) / metrics.density
+        return (availableDp / (posterDp + gapDp)).toInt().coerceIn(3, 6)
     }
 
     private fun applyFilter(chip: String) {

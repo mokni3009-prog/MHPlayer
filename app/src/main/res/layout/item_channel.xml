@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
+    android:layout_height="@dimen/list_row_height"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
+    android:paddingStart="@dimen/list_item_padding"
+    android:paddingEnd="@dimen/list_item_padding"
     android:focusable="true"
     android:clickable="true">
 
     <ImageView
         android:id="@+id/channelLogo"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/list_item_icon"
+        android:layout_height="@dimen/list_item_icon"
         android:scaleType="centerCrop"
         android:background="@drawable/poster_placeholder"
         android:contentDescription="@null" />
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_list_item"
         android:textColor="@color/color_text_primary"
         android:maxLines="1"
         android:ellipsize="end" />

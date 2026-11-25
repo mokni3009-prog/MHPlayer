@@ -4,21 +4,21 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:background="@color/color_background"
-    android:padding="16dp">
+    android:padding="@dimen/screen_padding">
 
     <com.mhplayer.app.ui.SidebarView
         android:id="@+id/sidebar"
-        android:layout_width="230dp"
+        android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginTop="@dimen/content_margin"
+        android:layout_marginBottom="@dimen/content_margin" />
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="16dp">
+        android:layout_marginStart="@dimen/content_margin_left"
+        android:layout_marginEnd="@dimen/content_margin_end">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,7 +27,7 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="272dp"
+                android:layout_height="@dimen/hero_height"
                 android:background="@drawable/poster_placeholder">
 
                 <ImageView
@@ -47,25 +47,25 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center_vertical"
-                    android:paddingStart="48dp"
-                    android:paddingEnd="48dp">
+                    android:paddingStart="@dimen/hero_padding"
+                    android:paddingEnd="@dimen/hero_padding">
 
                     <TextView
                         android:id="@+id/heroTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Film à la une"
-                        android:textSize="48sp"
+                        android:textSize="@dimen/text_hero_title"
                         android:textStyle="bold"
                         android:textColor="@color/color_text_primary" />
 
                     <TextView
                         android:id="@+id/heroSynopsis"
-                        android:layout_width="600dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:text="Un thriller haletant dans une ville sous la pluie. Trahisons, secrets et enquête nocturne."
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_body"
                         android:textColor="#D8D8DC"
                         android:maxLines="2" />
 
@@ -73,12 +73,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="24dp">
+                        android:layout_marginTop="@dimen/form_margin_top">
 
                         <Button
                             android:id="@+id/heroPlayButton"
                             android:layout_width="wrap_content"
-                            android:layout_height="52dp"
+                            android:layout_height="@dimen/button_height"
                             android:text="▶  Lecture"
                             android:focusable="true"
                             style="@style/Widget.MHPlayer.Button.Primary" />
@@ -86,8 +86,8 @@
                         <Button
                             android:id="@+id/heroInfoButton"
                             android:layout_width="wrap_content"
-                            android:layout_height="52dp"
-                            android:layout_marginStart="16dp"
+                            android:layout_height="@dimen/button_height"
+                            android:layout_marginStart="@dimen/form_gap"
                             android:text="Plus d'infos"
                             android:focusable="true"
                             style="@style/Widget.MHPlayer.Button.Secondary" />
@@ -99,16 +99,16 @@
                 android:id="@+id/rowsList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp" />
+                android:layout_marginTop="@dimen/form_margin_top" />
 
             <TextView
                 android:id="@+id/emptyText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="@dimen/section_gap"
                 android:gravity="center"
                 android:text="Aucun contenu"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_empty"
                 android:textColor="@color/color_text_muted"
                 android:visibility="gone" />
         </LinearLayout>

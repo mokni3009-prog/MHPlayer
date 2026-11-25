@@ -2,11 +2,11 @@
 <!-- One sidebar menu row: 4dp red left bar + icon + label. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
+    android:layout_height="@dimen/sidebar_item_height"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingStart="0dp"
-    android:paddingEnd="16dp"
+    android:paddingEnd="@dimen/sidebar_padding_right"
     android:focusable="true"
     android:clickable="true">
 
@@ -19,17 +19,17 @@
 
     <ImageView
         android:id="@+id/sidebarItemIcon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="20dp"
+        android:layout_width="@dimen/sidebar_item_icon"
+        android:layout_height="@dimen/sidebar_item_icon"
+        android:layout_marginStart="@dimen/sidebar_item_icon_margin"
         android:contentDescription="@null" />
 
     <TextView
         android:id="@+id/sidebarItemLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:textSize="20sp"
+        android:layout_marginStart="@dimen/sidebar_item_gap"
+        android:textSize="@dimen/text_sidebar_label"
         android:textColor="@color/color_text_secondary" />
 
 </LinearLayout>

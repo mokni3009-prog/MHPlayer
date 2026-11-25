@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="150dp"
-    android:layout_height="84dp"
+    android:layout_width="@dimen/thumb_width"
+    android:layout_height="@dimen/thumb_height"
     android:background="@drawable/selector_focusable"
     android:focusable="true"
     android:clickable="true">
@@ -16,7 +16,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="@dimen/thumb_gradient_height"
         android:layout_gravity="bottom"
         android:background="@drawable/bg_gradient_bottom" />
 
@@ -26,8 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:gravity="center"
-        android:paddingBottom="8dp"
-        android:textSize="16sp"
+        android:paddingBottom="@dimen/thumb_title_padding"
+        android:textSize="@dimen/text_poster_title"
         android:textStyle="bold"
         android:textColor="@color/color_text_primary"
         android:maxLines="1"

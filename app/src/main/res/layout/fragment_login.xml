@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Login — responsive (v1.3): the card is 0dp wide inside a ConstraintLayout
+     with 24dp side margins and a 530dp max width, so it never clips on narrow
+     phones; vertical sizes come from the screen-size dimens buckets. The
+     ScrollView keeps the whole form reachable (incl. with the keyboard open). -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background_alt">
@@ -9,22 +14,28 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:padding="40dp">
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_card"
-                android:paddingStart="32dp"
-                android:paddingEnd="32dp"
-                android:paddingTop="48dp"
-                android:paddingBottom="32dp">
+                android:paddingStart="@dimen/login_card_padding_side"
+                android:paddingEnd="@dimen/login_card_padding_side"
+                android:paddingTop="@dimen/login_card_padding_top"
+                android:paddingBottom="@dimen/login_card_padding_bottom"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintWidth_max="@dimen/login_card_width"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -33,25 +44,25 @@
                     android:gravity="center">
 
                     <ImageView
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
+                        android:layout_width="@dimen/logo_icon"
+                        android:layout_height="@dimen/logo_icon"
                         android:src="@drawable/logo_play"
                         android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="@dimen/logo_text_margin"
                         android:text="MH Player"
-                        android:textSize="56sp"
+                        android:textSize="@dimen/text_logo"
                         android:textStyle="bold"
                         android:textColor="@color/color_text_primary" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_height="@dimen/tab_height"
+                    android:layout_marginTop="@dimen/form_margin_top"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -69,13 +80,13 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Xtream Codes"
-                            android:textSize="20sp"
+                            android:textSize="@dimen/text_tab"
                             android:textStyle="bold"
                             android:textColor="@color/color_text_primary" />
 
                         <View
                             android:id="@+id/tabXtreamUnderline"
-                            android:layout_width="120dp"
+                            android:layout_width="@dimen/tab_underline_width"
                             android:layout_height="3dp"
                             android:layout_marginTop="6dp"
                             android:background="@color/color_primary_red" />
@@ -88,7 +99,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:background="#444444"
+                        android:background="@color/color_tab_inactive"
                         android:focusable="true"
                         android:clickable="true">
 
@@ -97,7 +108,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Playlist M3U"
-                            android:textSize="20sp"
+                            android:textSize="@dimen/text_tab"
                             android:textColor="@color/color_text_muted" />
                     </LinearLayout>
                 </LinearLayout>
@@ -108,20 +119,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="24dp">
+                    android:layout_marginTop="@dimen/form_margin_top">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Serveur (URL)"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_label"
                         android:textColor="@color/color_text_primary" />
 
                     <EditText
                         android:id="@+id/inputServer"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="@dimen/input_height"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:hint="https://serveur.example.com"
                         android:inputType="textUri"
                         style="@style/Widget.MHPlayer.Input" />
@@ -129,16 +140,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:text="Nom d'utilisateur"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_label"
                         android:textColor="@color/color_text_primary" />
 
                     <EditText
                         android:id="@+id/inputUsername"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="@dimen/input_height"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:hint="ex: utilisateur123"
                         android:inputType="text"
                         style="@style/Widget.MHPlayer.Input" />
@@ -146,16 +157,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:text="Mot de passe"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_label"
                         android:textColor="@color/color_text_primary" />
 
                     <EditText
                         android:id="@+id/inputPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="@dimen/input_height"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:hint="••••••••••"
                         android:inputType="textPassword"
                         style="@style/Widget.MHPlayer.Input" />
@@ -163,16 +174,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:text="Nom de la playlist"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_label"
                         android:textColor="@color/color_text_primary" />
 
                     <EditText
                         android:id="@+id/inputPlaylistName"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="@dimen/input_height"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:hint="ex: Ma playlist"
                         android:inputType="text"
                         style="@style/Widget.MHPlayer.Input" />
@@ -184,21 +195,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="@dimen/form_margin_top"
                     android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="URL de la playlist"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_label"
                         android:textColor="@color/color_text_primary" />
 
                     <EditText
                         android:id="@+id/inputM3uUrl"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="@dimen/input_height"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:hint="https://serveur.example.com/playlist.m3u"
                         android:inputType="textUri"
                         style="@style/Widget.MHPlayer.Input" />
@@ -206,16 +217,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:text="Nom de la playlist"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_label"
                         android:textColor="@color/color_text_primary" />
 
                     <EditText
                         android:id="@+id/inputM3uPlaylistName"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_height="@dimen/input_height"
+                        android:layout_marginTop="@dimen/form_gap"
                         android:hint="ex: Ma playlist"
                         android:inputType="text"
                         style="@style/Widget.MHPlayer.Input" />
@@ -224,8 +235,8 @@
                 <Button
                     android:id="@+id/loginButton"
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_height="@dimen/button_primary_height"
+                    android:layout_marginTop="@dimen/form_margin_top"
                     android:text="Se connecter"
                     style="@style/Widget.MHPlayer.Button.Primary" />
 
@@ -234,16 +245,16 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="@dimen/form_gap"
                     android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/errorText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="@dimen/form_gap"
                     android:gravity="center"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_error"
                     android:textColor="@color/color_primary_red"
                     android:visibility="gone" />
 
@@ -251,12 +262,12 @@
                     android:id="@+id/loginFooter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="@dimen/form_gap"
                     android:gravity="center"
                     android:text="Connexion Xtream Codes"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/text_footer"
                     android:textColor="@color/color_text_muted" />
             </LinearLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </FrameLayout>

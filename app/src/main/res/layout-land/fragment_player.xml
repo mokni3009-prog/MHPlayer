@@ -43,9 +43,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/form_gap"
             android:text="Changement de lecteur…"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_body"
             android:textColor="@color/color_text_primary" />
     </LinearLayout>
 
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Erreur de lecture"
-            android:textSize="24sp"
+            android:textSize="@dimen/text_section_title"
             android:textStyle="bold"
             android:textColor="@color/color_text_primary" />
 
@@ -72,12 +72,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="24dp">
+            android:layout_marginTop="@dimen/form_margin_top">
 
             <Button
                 android:id="@+id/retryButton"
                 android:layout_width="wrap_content"
-                android:layout_height="52dp"
+                android:layout_height="@dimen/button_height"
                 android:text="Réessayer"
                 android:focusable="true"
                 style="@style/Widget.MHPlayer.Button.Primary" />
@@ -85,8 +85,8 @@
             <Button
                 android:id="@+id/otherFormatButton"
                 android:layout_width="wrap_content"
-                android:layout_height="52dp"
-                android:layout_marginStart="16dp"
+                android:layout_height="@dimen/button_height"
+                android:layout_marginStart="@dimen/form_gap"
                 android:text="Autre format"
                 android:focusable="true"
                 style="@style/Widget.MHPlayer.Button.Secondary" />
@@ -94,8 +94,8 @@
             <Button
                 android:id="@+id/switchEngineButton"
                 android:layout_width="wrap_content"
-                android:layout_height="52dp"
-                android:layout_marginStart="16dp"
+                android:layout_height="@dimen/button_height"
+                android:layout_marginStart="@dimen/form_gap"
                 android:text="Changer de lecteur"
                 android:focusable="true"
                 style="@style/Widget.MHPlayer.Button.Secondary" />
@@ -106,18 +106,18 @@
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="116dp"
+        android:layout_height="@dimen/player_topbar_height"
         android:layout_gravity="top"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@drawable/bg_gradient_top"
-        android:paddingStart="40dp"
-        android:paddingEnd="40dp">
+        android:paddingStart="@dimen/player_bar_padding"
+        android:paddingEnd="@dimen/player_bar_padding">
 
         <ImageView
             android:id="@+id/backButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/player_back_size"
+            android:layout_height="@dimen/player_back_size"
             android:src="@drawable/ic_back"
             android:focusable="true"
             android:clickable="true"
@@ -127,9 +127,9 @@
             android:id="@+id/playerTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="@dimen/form_margin_top"
             android:text="Sport 1"
-            android:textSize="56sp"
+            android:textSize="@dimen/text_player_title"
             android:textStyle="bold"
             android:textColor="@color/color_text_primary" />
 
@@ -137,14 +137,14 @@
             android:id="@+id/liveBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="@dimen/form_margin_top"
             android:background="@drawable/bg_badge"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:text="EN DIRECT"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_badge"
             android:textStyle="bold"
             android:textColor="@color/color_text_primary" />
     </LinearLayout>
@@ -153,18 +153,18 @@
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
-        android:layout_height="96dp"
+        android:layout_height="@dimen/player_bottombar_height"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@drawable/bg_gradient_bottom"
-        android:paddingStart="40dp"
-        android:paddingEnd="40dp">
+        android:paddingStart="@dimen/player_bar_padding"
+        android:paddingEnd="@dimen/player_bar_padding">
 
         <ImageView
             android:id="@+id/playPauseButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="@dimen/player_play_size"
+            android:layout_height="@dimen/player_play_size"
             android:background="@drawable/bg_circle_outline"
             android:padding="12dp"
             android:src="@drawable/ic_pause"
@@ -176,9 +176,9 @@
             android:id="@+id/currentTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="@dimen/form_margin_top"
             android:text="14:32"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_mini_time"
             android:textColor="@color/color_text_primary" />
 
         <SeekBar
@@ -186,8 +186,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="@dimen/form_margin_top"
+            android:layout_marginEnd="@dimen/form_margin_top"
             android:max="1000"
             android:progressDrawable="@drawable/seekbar_progress"
             android:thumb="@drawable/seek_thumb"
@@ -198,25 +198,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1:45:00"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_mini_time"
             android:textColor="@color/color_text_primary" />
 
         <Button
             android:id="@+id/goLiveButton"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="16dp"
+            android:layout_height="@dimen/chip_height"
+            android:layout_marginStart="@dimen/form_gap"
             android:text="En direct"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_small"
             android:visibility="gone"
             android:focusable="true"
             style="@style/Widget.MHPlayer.Button.Primary" />
 
         <ImageView
             android:id="@+id/volumeButton"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="28dp"
+            android:layout_width="@dimen/player_icon_size"
+            android:layout_height="@dimen/player_icon_size"
+            android:layout_marginStart="@dimen/player_icon_margin"
             android:src="@drawable/ic_volume"
             android:focusable="true"
             android:clickable="true"
@@ -224,9 +224,9 @@
 
         <ImageView
             android:id="@+id/settingsButton"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="28dp"
+            android:layout_width="@dimen/player_icon_size"
+            android:layout_height="@dimen/player_icon_size"
+            android:layout_marginStart="@dimen/player_icon_margin"
             android:src="@drawable/ic_settings"
             android:focusable="true"
             android:clickable="true"
@@ -234,9 +234,9 @@
 
         <ImageView
             android:id="@+id/fullscreenButton"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="28dp"
+            android:layout_width="@dimen/player_icon_size"
+            android:layout_height="@dimen/player_icon_size"
+            android:layout_marginStart="@dimen/player_icon_margin"
             android:src="@drawable/ic_fullscreen"
             android:focusable="true"
             android:clickable="true"

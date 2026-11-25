@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dimensions — TV bucket (smallest width >= 720dp): 16:9 televisions.
+     Same names as values/dimens.xml, original 1280x720 design metrics. -->
+<resources>
+    <dimen name="sidebar_width">230dp</dimen>
+    <dimen name="sidebar_logo_icon">36dp</dimen>
+    <dimen name="sidebar_logo_padding_top">36dp</dimen>
+    <dimen name="sidebar_logo_padding_bottom">16dp</dimen>
+    <dimen name="sidebar_logo_text_margin">12dp</dimen>
+    <dimen name="sidebar_item_height">64dp</dimen>
+    <dimen name="sidebar_item_icon">24dp</dimen>
+    <dimen name="sidebar_item_gap">16dp</dimen>
+    <dimen name="sidebar_item_icon_margin">20dp</dimen>
+    <dimen name="sidebar_padding_left">24dp</dimen>
+    <dimen name="sidebar_padding_right">16dp</dimen>
+    <dimen name="sidebar_selected_bar_width">4dp</dimen>
+
+    <dimen name="radius_card_large">20dp</dimen>
+    <dimen name="radius_card">16dp</dimen>
+    <dimen name="radius_button">12dp</dimen>
+    <dimen name="radius_chip">28dp</dimen>
+    <dimen name="radius_input">10dp</dimen>
+    <dimen name="radius_poster">12dp</dimen>
+    <dimen name="radius_badge">10dp</dimen>
+
+    <dimen name="login_card_width">530dp</dimen>
+    <dimen name="logo_icon">44dp</dimen>
+    <dimen name="logo_text_margin">16dp</dimen>
+    <dimen name="tab_underline_width">120dp</dimen>
+    <dimen name="login_card_padding_top">48dp</dimen>
+    <dimen name="login_card_padding_bottom">32dp</dimen>
+    <dimen name="login_card_padding_side">32dp</dimen>
+    <dimen name="input_height">56dp</dimen>
+    <dimen name="input_padding">16dp</dimen>
+    <dimen name="button_primary_height">64dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="chip_height">40dp</dimen>
+    <dimen name="chip_padding">24dp</dimen>
+
+    <dimen name="poster_width_land">137dp</dimen>
+    <dimen name="poster_height_land">188dp</dimen>
+    <dimen name="poster_width_home">112dp</dimen>
+    <dimen name="poster_height_home">168dp</dimen>
+    <dimen name="poster_title_margin">10dp</dimen>
+    <dimen name="thumb_width">150dp</dimen>
+    <dimen name="thumb_height">84dp</dimen>
+    <dimen name="thumb_gradient_height">40dp</dimen>
+    <dimen name="thumb_title_padding">8dp</dimen>
+    <dimen name="details_poster_width">330dp</dimen>
+    <dimen name="details_poster_height">388dp</dimen>
+
+    <dimen name="content_margin">32dp</dimen>
+    <dimen name="content_margin_left">40dp</dimen>
+    <dimen name="content_margin_end">16dp</dimen>
+    <dimen name="grid_gap">20dp</dimen>
+    <dimen name="row_gap">16dp</dimen>
+    <dimen name="section_gap">48dp</dimen>
+    <dimen name="screen_padding">16dp</dimen>
+
+    <dimen name="hero_height">272dp</dimen>
+    <dimen name="hero_padding">48dp</dimen>
+    <dimen name="loading_ring_size">220dp</dimen>
+    <dimen name="loading_bar_width">360dp</dimen>
+    <dimen name="steps_gap">64dp</dimen>
+
+    <dimen name="bouquet_column_width">194dp</dimen>
+    <dimen name="channel_column_width">202dp</dimen>
+    <dimen name="column_gap">16dp</dimen>
+    <dimen name="video_margin">16dp</dimen>
+    <dimen name="mini_row_padding">24dp</dimen>
+    <dimen name="mini_play_size">36dp</dimen>
+    <dimen name="mini_icon_size">28dp</dimen>
+
+    <dimen name="player_topbar_height">116dp</dimen>
+    <dimen name="player_bottombar_height">96dp</dimen>
+    <dimen name="player_play_size">56dp</dimen>
+    <dimen name="player_bar_padding">40dp</dimen>
+    <dimen name="player_back_size">40dp</dimen>
+    <dimen name="player_icon_margin">28dp</dimen>
+    <dimen name="player_icon_size">28dp</dimen>
+
+    <dimen name="stat_gap">96dp</dimen>
+    <dimen name="tab_height">56dp</dimen>
+    <dimen name="form_gap">16dp</dimen>
+    <dimen name="form_margin_top">24dp</dimen>
+    <dimen name="card_padding">24dp</dimen>
+
+    <dimen name="episode_thumb_width">150dp</dimen>
+    <dimen name="episode_thumb_height">84dp</dimen>
+    <dimen name="episode_label_height">36dp</dimen>
+    <dimen name="list_row_height">64dp</dimen>
+    <dimen name="list_item_icon">28dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+    <dimen name="list_item_margin">8dp</dimen>
+    <dimen name="tile_height">96dp</dimen>
+    <dimen name="tile_icon_size">36dp</dimen>
+    <dimen name="tile_label_margin">8dp</dimen>
+    <dimen name="row_title_margin">24dp</dimen>
+
+    <dimen name="text_logo">56sp</dimen>
+    <dimen name="text_loading_logo">64sp</dimen>
+    <dimen name="text_screen_title">68sp</dimen>
+    <dimen name="text_hero_title">48sp</dimen>
+    <dimen name="text_section_title">28sp</dimen>
+    <dimen name="text_channel_title">56sp</dimen>
+    <dimen name="text_player_title">56sp</dimen>
+    <dimen name="text_details_title">56sp</dimen>
+    <dimen name="text_playlist_name">32sp</dimen>
+    <dimen name="text_stat_value">32sp</dimen>
+    <dimen name="text_label">18sp</dimen>
+    <dimen name="text_input">18sp</dimen>
+    <dimen name="text_tab">20sp</dimen>
+    <dimen name="text_button">20sp</dimen>
+    <dimen name="text_body">18sp</dimen>
+    <dimen name="text_percent">32sp</dimen>
+    <dimen name="text_status">28sp</dimen>
+    <dimen name="text_sidebar_label">20sp</dimen>
+    <dimen name="text_sidebar_logo">22sp</dimen>
+    <dimen name="text_row_title">28sp</dimen>
+    <dimen name="text_chip">19sp</dimen>
+    <dimen name="text_poster_title">16sp</dimen>
+    <dimen name="text_meta">20sp</dimen>
+    <dimen name="text_plot">20sp</dimen>
+    <dimen name="text_footer">16sp</dimen>
+    <dimen name="text_loading_footer">20sp</dimen>
+    <dimen name="text_steps">28sp</dimen>
+    <dimen name="text_mini_time">18sp</dimen>
+    <dimen name="text_badge">16sp</dimen>
+    <dimen name="text_column_title">20sp</dimen>
+    <dimen name="text_list_item">20sp</dimen>
+    <dimen name="text_small">16sp</dimen>
+    <dimen name="text_error">16sp</dimen>
+    <dimen name="text_empty">20sp</dimen>
+    <dimen name="text_dialog_title">20sp</dimen>
+</resources>

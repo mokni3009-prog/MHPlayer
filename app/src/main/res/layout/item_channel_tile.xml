@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="150dp"
-    android:layout_height="96dp"
+    android:layout_width="@dimen/thumb_width"
+    android:layout_height="@dimen/tile_height"
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/bg_card"
@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/tileIcon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="@dimen/tile_icon_size"
+        android:layout_height="@dimen/tile_icon_size"
         android:src="@drawable/ic_tv"
         android:contentDescription="@null" />
 
@@ -19,8 +19,8 @@
         android:id="@+id/tileLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="16sp"
+        android:layout_marginTop="@dimen/tile_label_margin"
+        android:textSize="@dimen/text_poster_title"
         android:textStyle="bold"
         android:textColor="@color/color_text_primary"
         android:maxLines="1"
