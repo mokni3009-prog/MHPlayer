@@ -14,6 +14,7 @@ import com.mhplayer.app.ui.MoviesFragment
 import com.mhplayer.app.ui.PlayerFragment
 import com.mhplayer.app.ui.PlaylistFragment
 import com.mhplayer.app.ui.SeriesFragment
+import com.mhplayer.app.util.AppUpdater
 
 /**
  * Single activity hosting every fragment with manual transactions.
@@ -44,6 +45,15 @@ class MainActivity : AppCompatActivity() {
                 showFragment(LoginFragment(), TAG_LOGIN, addToBackStack = false)
             }
         }
+        // Self-update check (GitHub): once per launch, non-blocking.
+        AppUpdater.checkForUpdate(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // If the user just enabled "install unknown apps" in Settings,
+        // offer the pending update again.
+        AppUpdater.onResume(this)
     }
 
     /** Replaces the container content. Top-level screens clear the back stack. */

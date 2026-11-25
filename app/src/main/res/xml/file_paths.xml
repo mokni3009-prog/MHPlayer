@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Self-update (v1.2): the downloaded APK lives in the public Downloads
+     folder (DownloadManager), FileProvider serves it to the installer. -->
+<paths>
+    <external-path name="downloads" path="Download/" />
+</paths>

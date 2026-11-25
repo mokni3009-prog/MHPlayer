@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Self-update (v1.2): installing the downloaded APK. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- Works on phones (touch) and TV boxes (remote). Touchscreen not required. -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -36,13 +38,28 @@
                 tools:node="remove" />
         </provider>
 
+        <!-- Self-update (v1.2): FileProvider serves the downloaded APK to the
+             system installer. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
             android:exported="true"
-            android:launchMode="singleTop">
-            <!-- No orientation lock: TV box shows landscape, phones rotate freely
-                 (portrait-adapted layouts). PlayerFragment forces landscape while playing. -->
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorLandscape">
+            <!-- Landscape only (v1.2): every screen is designed 16:9 landscape
+                 (see the approved mockups). sensorLandscape allows both
+                 landscape orientations; phones and the TV box both stay
+                 landscape. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
