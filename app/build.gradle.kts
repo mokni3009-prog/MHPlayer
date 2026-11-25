@@ -84,6 +84,9 @@ dependencies {
     implementation("androidx.room:room-runtime:2.8.5")
     implementation("androidx.room:room-ktx:2.8.5")
     kapt("androidx.room:room-compiler:2.8.5")
+    // Room 2.8.5 bundles kotlin-metadata-jvm 2.3.x, which cannot read Kotlin 2.4.0
+    // metadata (kapt fails). Pin the 2.4.21 library on the kapt classpath.
+    kapt("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.21")
     implementation("androidx.security:security-crypto:1.1.0")
 
     // Media3 1.11.1 — ALL pinned to the same version (primary player: ExoPlayer)
