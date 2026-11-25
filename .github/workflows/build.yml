@@ -59,7 +59,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           mkdir -p releases
-          cp app/build/outputs/apk/release/app-release.apk releases/MH-Player-v1.0.apk
-          git add releases/MH-Player-v1.0.apk
-          git diff --cached --quiet || git commit -m "Add MH Player v1.0 APK (arm64-v8a) [skip ci]"
+          cp app/build/outputs/apk/release/app-release.apk releases/MH-Player-v1.2.apk
+          git add releases/MH-Player-v1.2.apk
+          git diff --cached --quiet || git commit -m "Add MH Player v1.2 APK (arm64-v8a) [skip ci]"
           git push
