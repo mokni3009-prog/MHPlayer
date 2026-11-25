@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Focusable item: transparent by default, red outline + dark fill when focused (DPAD). -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_focused="true">
         <shape android:shape="rectangle">
-            <solid android:color="#1E1E22" />
-            <stroke android:width="2dp" android:color="#CC2226" />
+            <solid android:color="@color/zeno_selected_bg" />
+            <stroke android:width="2dp" android:color="@color/zeno_gold" />
             <corners android:radius="12dp" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <solid android:color="#1E1E22" />
+            <solid android:color="@color/zeno_selected_bg" />
             <corners android:radius="12dp" />
         </shape>
     </item>

@@ -19,12 +19,19 @@
 
     <TextView
         android:id="@+id/channelName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginStart="12dp"
         android:textSize="@dimen/text_list_item"
-        android:textColor="@color/color_text_primary"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins"
+        android:textColor="@color/zeno_text_primary"
         android:maxLines="1"
-        android:ellipsize="end" />
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
 
 </LinearLayout>

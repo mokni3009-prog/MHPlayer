@@ -44,9 +44,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/form_gap"
-            android:text="Changement de lecteur…"
+            android:text="Switching player..."
             android:textSize="@dimen/text_body"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
     </LinearLayout>
 
     <!-- Error state -->
@@ -63,10 +63,10 @@
             android:id="@+id/errorMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Erreur de lecture"
+            android:text="Playback error"
             android:textSize="@dimen/text_section_title"
             android:textStyle="bold"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -78,27 +78,27 @@
                 android:id="@+id/retryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height"
-                android:text="Réessayer"
+                android:text="Retry"
                 android:focusable="true"
-                style="@style/Widget.MHPlayer.Button.Primary" />
+                style="@style/Widget.Zeno.Button.Primary" />
 
             <Button
                 android:id="@+id/otherFormatButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height"
                 android:layout_marginStart="@dimen/form_gap"
-                android:text="Autre format"
+                android:text="Other format"
                 android:focusable="true"
-                style="@style/Widget.MHPlayer.Button.Secondary" />
+                style="@style/Widget.Zeno.Button.Secondary" />
 
             <Button
                 android:id="@+id/switchEngineButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height"
                 android:layout_marginStart="@dimen/form_gap"
-                android:text="Changer de lecteur"
+                android:text="Switch player"
                 android:focusable="true"
-                style="@style/Widget.MHPlayer.Button.Secondary" />
+                style="@style/Widget.Zeno.Button.Secondary" />
         </LinearLayout>
     </LinearLayout>
 
@@ -131,7 +131,7 @@
             android:text="Sport 1"
             android:textSize="@dimen/text_player_title"
             android:textStyle="bold"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <TextView
             android:id="@+id/liveBadge"
@@ -143,10 +143,10 @@
             android:paddingEnd="12dp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
-            android:text="EN DIRECT"
+            android:text="LIVE"
             android:textSize="@dimen/text_badge"
             android:textStyle="bold"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
     </LinearLayout>
 
     <!-- Bottom bar -->
@@ -179,7 +179,7 @@
             android:layout_marginStart="@dimen/form_margin_top"
             android:text="14:32"
             android:textSize="@dimen/text_mini_time"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <SeekBar
             android:id="@+id/seekBar"
@@ -199,18 +199,18 @@
             android:layout_height="wrap_content"
             android:text="1:45:00"
             android:textSize="@dimen/text_mini_time"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <Button
             android:id="@+id/goLiveButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/chip_height"
             android:layout_marginStart="@dimen/form_gap"
-            android:text="En direct"
+            android:text="Live"
             android:textSize="@dimen/text_small"
             android:visibility="gone"
             android:focusable="true"
-            style="@style/Widget.MHPlayer.Button.Primary" />
+            style="@style/Widget.Zeno.Button.Primary" />
 
         <ImageView
             android:id="@+id/volumeButton"

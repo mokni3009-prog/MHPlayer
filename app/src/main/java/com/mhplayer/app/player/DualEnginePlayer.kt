@@ -250,6 +250,16 @@ class DualEnginePlayer(
         activePlayer().seekTo(positionMs)
     }
 
+    override fun setPreferredAudioLanguage(language: String?) {
+        exoPlayer.setPreferredAudioLanguage(language)
+        vlcPlayer.setPreferredAudioLanguage(language)
+    }
+
+    override fun setSubtitlesEnabled(enabled: Boolean) {
+        exoPlayer.setSubtitlesEnabled(enabled)
+        vlcPlayer.setSubtitlesEnabled(enabled)
+    }
+
     override fun setQualityLock(maxHeight: Int) {
         // Exo applies it live (track caps rebuilt); VLC stores it for the
         // next play. Both engines get the same lock so a switch keeps it.

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Zeno Play Settings (approved reference): fixed sidebar (Settings
+     active), rows with gold->cyan switches: Player / Subtitles /
+     Audio Language / Video Quality / Appearance / Parental Control /
+     Updates / About. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/zeno_bg"
+    android:padding="@dimen/screen_padding">
+
+    <com.mhplayer.app.ui.SidebarView
+        android:id="@+id/sidebar"
+        android:layout_width="@dimen/sidebar_width"
+        android:layout_height="match_parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/content_margin_left">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_text_primary" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/settingsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

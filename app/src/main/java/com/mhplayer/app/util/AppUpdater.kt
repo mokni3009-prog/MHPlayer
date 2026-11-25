@@ -35,8 +35,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  * (versionName, versionCode, apkUrl, changelog).
  *
  * Flow: on launch (once per process) MainActivity calls [checkForUpdate].
- * If a newer versionCode exists, a French dialog offers
- * "Mettre à jour" / "Plus tard" (never forced). The APK downloads with
+ * If a newer versionCode exists, an English dialog offers
+ * "Update" / "Later" (never forced). The APK downloads with
  * the system DownloadManager (notification + progress) and installs on
  * top of the current install (same package + signature, no uninstall,
  * user data kept) via ACTION_VIEW + FileProvider.
@@ -99,6 +99,33 @@ object AppUpdater {
     }
 
     /**
+     * Manual check from Settings > Updates. Bypasses the once-per-launch
+     * guard and tells the user when they are already up to date.
+     * Never throws.
+     */
+    fun checkNow(activity: AppCompatActivity) {
+        try {
+            activity.lifecycleScope.launch(Dispatchers.IO) {
+                val info = fetchVersionInfo()
+                withContext(Dispatchers.Main) {
+                    if (activity.isFinishing || activity.isDestroyed) return@withContext
+                    if (info == null || info.versionCode <= BuildConfig.VERSION_CODE) {
+                        Toast.makeText(
+                            activity,
+                            "You already have the latest version",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        return@withContext
+                    }
+                    showUpdateDialog(activity, info)
+                }
+            }
+        } catch (_: Throwable) {
+            // Updater must never crash the app.
+        }
+    }
+
+    /**
      * Called from MainActivity.onResume: if the user just enabled
      * "install unknown apps" in Settings, offer the pending update
      * again. Never throws.
@@ -153,7 +180,7 @@ object AppUpdater {
                 com.mhplayer.app.R.id.updateChangelog,
             )
             changelogView.text = buildString {
-                append("Une nouvelle version est disponible.")
+                append("A new version is available.")
                 if (info.changelog.isNotBlank()) {
                     append("\n\n")
                     append(info.changelog)
@@ -201,14 +228,13 @@ object AppUpdater {
     private fun showUnknownSourcesDialog(activity: AppCompatActivity) {
         try {
             AlertDialog.Builder(activity)
-                .setTitle("Autorisation d'installation")
+                .setTitle("Install permission")
                 .setMessage(
-                    "Pour installer la mise à jour, autorisez une seule fois " +
-                        "l'installation d'applications inconnues pour MH Player : " +
-                        "activez « Autoriser l'installation d'applications inconnues » " +
-                        "pour MH Player, puis revenez ici et appuyez sur « Mettre à jour ».",
+                    "To install the update, allow installing unknown apps for Zeno Play once: " +
+                        "turn on \"Allow installing unknown apps\" " +
+                        "for Zeno Play, then come back here and tap \"Update\".",
                 )
-                .setPositiveButton("Ouvrir les paramètres") { _, _ ->
+                .setPositiveButton("Open Settings") { _, _ ->
                     try {
                         val intent = Intent(
                             Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
@@ -219,7 +245,7 @@ object AppUpdater {
                         // Settings screen unavailable on this device.
                     }
                 }
-                .setNegativeButton("Annuler") { _, _ ->
+                .setNegativeButton("Cancel") { _, _ ->
                     pendingUpdate = null
                 }
                 .setCancelable(true)
@@ -242,11 +268,11 @@ object AppUpdater {
         try {
             val updatesDir = File(activity.getExternalFilesDir(null), "updates")
                 .apply { mkdirs() }
-            val file = File(updatesDir, "MH-Player-v${info.versionName}.apk")
+            val file = File(updatesDir, "Zeno-Play-v${info.versionName}.apk")
             if (file.exists()) file.delete()
             val request = DownloadManager.Request(Uri.parse(info.apkUrl))
-                .setTitle("MH Player v${info.versionName}")
-                .setDescription("Téléchargement de la mise à jour…")
+                .setTitle("Zeno Play v${info.versionName}")
+                .setDescription("Downloading the update...")
                 .setNotificationVisibility(
                     DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED,
                 )
@@ -268,14 +294,14 @@ object AppUpdater {
         try {
             Toast.makeText(
                 activity,
-                "Téléchargement de la mise à jour…",
+                "Downloading the update...",
                 Toast.LENGTH_SHORT,
             ).show()
             activity.lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     val updatesDir = File(activity.getExternalFilesDir(null), "updates")
                         .apply { mkdirs() }
-                    val file = File(updatesDir, "MH-Player-v${info.versionName}.apk")
+                    val file = File(updatesDir, "Zeno-Play-v${info.versionName}.apk")
                     val request = Request.Builder().url(info.apkUrl).get().build()
                     httpClient.newCall(request).execute().use { response ->
                         if (!response.isSuccessful) throw java.io.IOException("HTTP ${response.code}")
@@ -287,7 +313,7 @@ object AppUpdater {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             activity,
-                            "Échec du téléchargement de la mise à jour",
+                            "Update download failed",
                             Toast.LENGTH_LONG,
                         ).show()
                         pendingUpdate = info
@@ -298,7 +324,7 @@ object AppUpdater {
         } catch (_: Throwable) {
             Toast.makeText(
                 activity,
-                "Échec du téléchargement de la mise à jour",
+                "Update download failed",
                 Toast.LENGTH_LONG,
             ).show()
             pendingUpdate = info
@@ -342,7 +368,7 @@ object AppUpdater {
                         } else {
                             Toast.makeText(
                                 appContext,
-                                "Échec du téléchargement de la mise à jour",
+                                "Update download failed",
                                 Toast.LENGTH_LONG,
                             ).show()
                             pendingUpdate = info
@@ -368,7 +394,7 @@ object AppUpdater {
             if (!file.exists()) {
                 Toast.makeText(
                     context,
-                    "Échec de la mise à jour — fichier introuvable",
+                    "Update failed — file not found",
                     Toast.LENGTH_LONG,
                 ).show()
                 pendingUpdate = info
@@ -397,7 +423,7 @@ object AppUpdater {
         } catch (_: Throwable) {
             Toast.makeText(
                 context,
-                "Impossible d'installer la mise à jour",
+                "Could not install the update",
                 Toast.LENGTH_LONG,
             ).show()
             pendingUpdate = info

@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.mhplayer.app.data.model.Credentials
+import com.mhplayer.app.data.model.UserInfo
 
 /**
  * Session storage: credentials + player settings + last-sync timestamps.
@@ -34,6 +35,19 @@ class SessionManager(context: Context) {
         private const val KEY_LAST_SYNC_LIVE = "last_sync_live"
         private const val KEY_LAST_SYNC_VOD = "last_sync_vod"
         private const val KEY_LAST_SYNC_SERIES = "last_sync_series"
+        // v1.6 — Settings + Account + Continue Watching.
+        private const val KEY_SUBTITLES_ENABLED = "subtitles_enabled"
+        private const val KEY_AUDIO_LANGUAGE = "audio_language"
+        private const val KEY_PARENTAL_CONTROL = "parental_control"
+        private const val KEY_DISPLAY_NAME = "display_name"
+        private const val KEY_USER_USERNAME = "user_username"
+        private const val KEY_USER_STATUS = "user_status"
+        private const val KEY_USER_EXP_DATE = "user_exp_date"
+        private const val KEY_USER_MAX_CONNECTIONS = "user_max_connections"
+        private const val KEY_USER_CREATED_AT = "user_created_at"
+        private const val KEY_USER_IS_TRIAL = "user_is_trial"
+        private const val KEY_RECENT_ITEMS = "recent_items"
+        private const val MAX_RECENT_ITEMS = 12
 
         // Engine setting values (ARCHITECTURE.md): AUTO | EXO | VLC
         const val ENGINE_AUTO = "AUTO"
@@ -148,6 +162,76 @@ class SessionManager(context: Context) {
         set(value) {
             prefs.edit().putBoolean(KEY_HBBTV_NOTE_SEEN, value).apply()
         }
+
+    // -- v1.6 Settings --------------------------------------------------------
+
+    /** Show subtitles when the stream has them (default off). */
+    var subtitlesEnabled: Boolean
+        get() = prefs.getBoolean(KEY_SUBTITLES_ENABLED, false)
+        set(value) {
+            prefs.edit().putBoolean(KEY_SUBTITLES_ENABLED, value).apply()
+        }
+
+    /** Preferred audio language: "auto" | "en" | "fr" | "ar" | "es". */
+    var audioLanguage: String
+        get() = prefs.getString(KEY_AUDIO_LANGUAGE, "auto") ?: "auto"
+        set(value) {
+            prefs.edit().putString(KEY_AUDIO_LANGUAGE, value).apply()
+        }
+
+    /** Parental control: hides adult categories and items everywhere. */
+    var parentalControlEnabled: Boolean
+        get() = prefs.getBoolean(KEY_PARENTAL_CONTROL, false)
+        set(value) {
+            prefs.edit().putBoolean(KEY_PARENTAL_CONTROL, value).apply()
+        }
+
+    /** Display name shown on the Account screen (editable, "Edit Profile"). */
+    var displayName: String
+        get() = prefs.getString(KEY_DISPLAY_NAME, null).orEmpty()
+        set(value) {
+            prefs.edit().putString(KEY_DISPLAY_NAME, value).apply()
+        }
+
+    // -- Subscription info (Account screen, saved at login) -------------------
+
+    fun saveUserInfo(info: UserInfo) {
+        prefs.edit()
+            .putString(KEY_USER_USERNAME, info.username)
+            .putString(KEY_USER_STATUS, info.status)
+            .putString(KEY_USER_EXP_DATE, info.expDate)
+            .putString(KEY_USER_MAX_CONNECTIONS, info.maxConnections)
+            .putString(KEY_USER_CREATED_AT, info.createdAt)
+            .putString(KEY_USER_IS_TRIAL, info.isTrial)
+            .apply()
+    }
+
+    val userUsername: String get() = prefs.getString(KEY_USER_USERNAME, null).orEmpty()
+    val userStatus: String get() = prefs.getString(KEY_USER_STATUS, null).orEmpty()
+    val userExpDate: String get() = prefs.getString(KEY_USER_EXP_DATE, null).orEmpty()
+    val userMaxConnections: String get() = prefs.getString(KEY_USER_MAX_CONNECTIONS, null).orEmpty()
+    val userCreatedAt: String get() = prefs.getString(KEY_USER_CREATED_AT, null).orEmpty()
+    val userIsTrial: String get() = prefs.getString(KEY_USER_IS_TRIAL, null).orEmpty()
+
+    // -- Continue Watching (Home) ----------------------------------------------
+
+    /**
+     * Recently played items, most recent first, as "type:id" entries
+     * (type = live | vod | series). Max [MAX_RECENT_ITEMS]; duplicates move
+     * to the front. Used by Home's "Continue Watching" row.
+     */
+    fun addRecentItem(type: String, id: Int) {
+        val entry = "$type:$id"
+        val list = getRecentItems().toMutableList()
+        list.remove(entry)
+        list.add(0, entry)
+        val trimmed = list.take(MAX_RECENT_ITEMS)
+        prefs.edit().putString(KEY_RECENT_ITEMS, trimmed.joinToString(",")).apply()
+    }
+
+    fun getRecentItems(): List<String> =
+        prefs.getString(KEY_RECENT_ITEMS, null).orEmpty()
+            .split(",").map { it.trim() }.filter { it.isNotEmpty() }
 
     // -- Last-sync timestamps (repository staleness, >24h = stale) -------------
 

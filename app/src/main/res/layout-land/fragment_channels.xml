@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Zeno Play Live TV (approved reference): fixed sidebar, the bouquets
+     list and the channels list inside dark panels, FLUSH top and bottom
+     (no header, no top/bottom space inside the panels), the selected row
+     highlighted with the gold->cyan left bar. Player window on the right
+     with the channel name in the sidebar font and the current program
+     (EPG) underneath. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:background="@color/color_background"
+    android:background="@color/zeno_bg"
     android:padding="@dimen/screen_padding">
 
     <com.mhplayer.app.ui.SidebarView
@@ -12,57 +18,33 @@
         android:layout_width="@dimen/sidebar_width"
         android:layout_height="match_parent" />
 
-    <!-- Bouquets column -->
+    <!-- Bouquets panel: list flush top and bottom -->
     <LinearLayout
         android:layout_width="@dimen/bouquet_column_width"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/column_gap"
         android:orientation="vertical"
-        android:background="@color/color_panel_dark">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/content_margin"
-            android:layout_marginTop="@dimen/form_margin_top"
-            android:text="Bouquets"
-            android:textSize="@dimen/text_column_title"
-            android:textStyle="bold"
-            android:textColor="@color/color_text_primary" />
+        android:background="@drawable/bg_sidebar_panel">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bouquetList"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/form_gap"
+            android:layout_height="match_parent"
             android:nextFocusRight="@+id/channelList" />
     </LinearLayout>
 
-    <!-- Chaînes column -->
+    <!-- Channels panel: list flush top and bottom -->
     <LinearLayout
         android:layout_width="@dimen/channel_column_width"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/column_gap"
         android:orientation="vertical"
-        android:background="@color/color_panel_mid">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/content_margin"
-            android:layout_marginTop="@dimen/form_margin_top"
-            android:text="Chaînes"
-            android:textSize="@dimen/text_column_title"
-            android:textStyle="bold"
-            android:textColor="@color/color_text_primary" />
+        android:background="@drawable/bg_sidebar_panel">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/channelList"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/form_gap"
+            android:layout_height="match_parent"
             android:nextFocusLeft="@+id/bouquetList"
             android:nextFocusRight="@+id/videoContainer" />
     </LinearLayout>
@@ -73,15 +55,13 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_marginStart="@dimen/column_gap"
-        android:orientation="vertical"
-        android:background="@color/color_panel_video">
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/videoContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_margin="@dimen/video_margin"
             android:background="@drawable/bg_card"
             android:focusable="true"
             android:clickable="true"
@@ -108,19 +88,20 @@
                 android:visibility="gone" />
         </FrameLayout>
 
+        <!-- Mini controls -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="@dimen/mini_row_padding"
-            android:paddingEnd="@dimen/mini_row_padding">
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
             <ImageView
                 android:id="@+id/miniPlayButton"
                 android:layout_width="@dimen/mini_play_size"
                 android:layout_height="@dimen/mini_play_size"
-                android:background="@color/color_focus_bg"
+                android:background="@drawable/bg_icon_circle"
                 android:padding="6dp"
                 android:src="@drawable/ic_play"
                 android:focusable="true"
@@ -134,7 +115,8 @@
                 android:layout_marginStart="@dimen/form_gap"
                 android:text="00:00"
                 android:textSize="@dimen/text_mini_time"
-                android:textColor="@color/color_text_primary" />
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_text_primary" />
 
             <View
                 android:layout_width="0dp"
@@ -147,7 +129,8 @@
                 android:layout_height="wrap_content"
                 android:text="—"
                 android:textSize="@dimen/text_mini_time"
-                android:textColor="@color/color_text_primary" />
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_text_primary" />
 
             <ImageView
                 android:id="@+id/miniVolumeButton"
@@ -170,14 +153,12 @@
                 android:contentDescription="@null" />
         </LinearLayout>
 
+        <!-- Channel name + favorite + LIVE badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="@dimen/form_gap"
-            android:paddingStart="@dimen/content_margin"
-            android:paddingEnd="@dimen/content_margin">
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/channelTitle"
@@ -185,11 +166,26 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:maxLines="1"
-                android:ellipsize="end"
-                android:text="Sport 1"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="Channel"
                 android:textSize="@dimen/text_channel_title"
                 android:textStyle="bold"
-                android:textColor="@color/color_text_primary" />
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_text_primary" />
+
+            <ImageView
+                android:id="@+id/favoriteButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_favorite"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="@null" />
 
             <TextView
                 android:id="@+id/liveBadge"
@@ -201,31 +197,73 @@
                 android:paddingEnd="12dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:text="EN DIRECT"
+                android:text="LIVE"
                 android:textSize="@dimen/text_badge"
                 android:textStyle="bold"
-                android:textColor="@color/color_text_primary" />
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_text_primary" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/channelSubtitle"
-            android:layout_width="wrap_content"
+        <!-- Current program (EPG) -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/form_gap"
-            android:layout_marginBottom="@dimen/form_margin_top"
-            android:paddingStart="@dimen/content_margin"
-            android:text="Match de football"
-            android:textSize="@dimen/text_body"
-            android:textColor="@color/color_text_secondary" />
+            android:orientation="vertical"
+            android:layout_marginTop="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/epgNowTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="@string/live_no_epg"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/zeno_text_primary" />
+
+                <TextView
+                    android:id="@+id/epgNowTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/zeno_text_muted" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/epgNextTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_text_secondary"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/emptyText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:gravity="center"
-            android:text="Aucun contenu"
-            android:textSize="@dimen/text_empty"
-            android:textColor="@color/color_text_muted"
+            android:text="@string/live_no_channels"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_muted"
             android:visibility="gone" />
+
     </LinearLayout>
 </LinearLayout>

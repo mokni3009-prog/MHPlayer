@@ -8,13 +8,36 @@
     android:focusable="true"
     android:clickable="true">
 
-    <ImageView
-        android:id="@+id/posterImage"
-        android:layout_width="@dimen/poster_width_land"
-        android:layout_height="@dimen/poster_height_land"
-        android:scaleType="centerCrop"
-        android:background="@drawable/poster_placeholder"
-        android:contentDescription="@null" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/posterImage"
+            android:layout_width="@dimen/poster_width_land"
+            android:layout_height="@dimen/poster_height_land"
+            android:scaleType="centerCrop"
+            android:background="@drawable/poster_placeholder"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/posterRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="6dp"
+            android:background="@drawable/bg_rating_badge"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="★ 8.5"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_gold"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/posterTitle"
@@ -24,7 +47,7 @@
         android:gravity="center"
         android:textSize="@dimen/text_poster_title"
         android:textStyle="bold"
-        android:textColor="@color/color_text_primary"
+        android:textColor="@color/zeno_text_primary"
         android:maxLines="1"
         android:ellipsize="end" />
 

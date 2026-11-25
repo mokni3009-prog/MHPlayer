@@ -14,10 +14,11 @@ import com.mhplayer.app.databinding.FragmentLoadingBinding
 import kotlinx.coroutines.launch
 
 /**
- * Loading screen: logo top-center, progress ring + red linear bar + %,
- * status text, steps row (Chaînes ✓ / Films in progress / Séries grey),
- * "Ma playlist" at the bottom. Drives repository.loadAll(progress), or
- * importM3u for an M3U login, then navigates to Home.
+ * Zeno Play loading screen (approved reference): Z logo + "Zeno Play" +
+ * tagline, thin gold->cyan progress bar, "Loading Xtream Codes..." below.
+ * Drives repository.loadAll(progress), or importM3u for an M3U login, then
+ * navigates to Home. Progress callbacks come from Dispatchers.IO — View
+ * updates MUST run on the Main thread (v1.4 fix for the stuck progress).
  */
 class LoadingFragment : Fragment() {
 
@@ -48,29 +49,23 @@ class LoadingFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 if (app.sessionManager.getCredentials() != null) {
-                    // v1.4: loadAll reports progress from Dispatchers.IO —
-                    // View updates MUST run on the Main thread. Posting them
-                    // here (not inside the repository) keeps the repository
-                    // UI-agnostic. runOnUiThread also fixes the stuck/racy
-                    // progress (10% with a stale message) seen on v1.3.
-                    app.repository.loadAll { step, percent, message ->
-                        activity.runOnUiThread { updateProgress(step, percent, message) }
+                    app.repository.loadAll { _, percent, message ->
+                        activity.runOnUiThread { updateProgress(percent, message) }
                     }
                 } else {
                     // M3U login: no Xtream auth — fetch + parse the playlist.
                     val url = app.sessionManager.getM3uUrl()
-                        ?: throw IllegalStateException("Aucune playlist")
+                        ?: throw IllegalStateException("No playlist")
                     val name = app.sessionManager.getPlaylistName()
-                    updateProgress(XtreamRepository.STEP_CATEGORIES, 5, "Chargement de la playlist…")
+                    updateProgress(5, getString(R.string.loading_categories))
                     app.repository.importM3u(url, name)
-                    updateProgress(XtreamRepository.STEP_LIVE, 60, "Chargement des chaînes…")
-                    updateProgress(XtreamRepository.STEP_DONE, 100, "Terminé")
+                    updateProgress(60, getString(R.string.loading_channels))
+                    updateProgress(100, getString(R.string.loading_done))
                 }
                 activity.openHome()
             } catch (e: Exception) {
                 if (!isAdded) return@launch
-                binding.errorText.text =
-                    "Échec du chargement — vérifiez votre connexion puis réessayez"
+                binding.errorText.text = getString(R.string.error_generic)
                 binding.errorText.visibility = View.VISIBLE
                 binding.retryButton.visibility = View.VISIBLE
                 FocusHelper.requestFocus(binding.retryButton)
@@ -78,53 +73,10 @@ class LoadingFragment : Fragment() {
         }
     }
 
-    private fun updateProgress(step: String, percent: Int, message: String) {
+    private fun updateProgress(percent: Int, message: String) {
         if (!isAdded || _binding == null) return
-        binding.progressBar.progress = percent
-        binding.progressRing.progress = percent
-        binding.percentText.text = "$percent%"
-        binding.statusText.text = message
-
-        val liveState = when (step) {
-            XtreamRepository.STEP_CATEGORIES -> 1
-            XtreamRepository.STEP_LIVE -> 1
-            XtreamRepository.STEP_VOD, XtreamRepository.STEP_SERIES, XtreamRepository.STEP_DONE -> 2
-            else -> 0
-        }
-        val vodState = when (step) {
-            XtreamRepository.STEP_VOD -> 1
-            XtreamRepository.STEP_SERIES, XtreamRepository.STEP_DONE -> 2
-            else -> 0
-        }
-        val seriesState = when (step) {
-            XtreamRepository.STEP_SERIES -> 1
-            XtreamRepository.STEP_DONE -> 2
-            else -> 0
-        }
-        applyStep(binding.stepLiveIcon, binding.stepLiveLabel, liveState)
-        applyStep(binding.stepVodIcon, binding.stepVodLabel, vodState)
-        applyStep(binding.stepSeriesIcon, binding.stepSeriesLabel, seriesState)
-    }
-
-    private fun applyStep(icon: android.widget.TextView, label: android.widget.TextView, state: Int) {
-        val context = requireContext()
-        when (state) {
-            2 -> { // done: green check
-                icon.text = "✓"
-                icon.setTextColor(context.getColor(R.color.color_success_green))
-                label.setTextColor(context.getColor(R.color.color_success_green))
-            }
-            1 -> { // in progress: red dot
-                icon.text = "●"
-                icon.setTextColor(context.getColor(R.color.color_primary_red))
-                label.setTextColor(context.getColor(R.color.color_primary_red))
-            }
-            else -> { // pending: grey hollow circle
-                icon.text = "○"
-                icon.setTextColor(context.getColor(R.color.color_text_disabled))
-                label.setTextColor(context.getColor(R.color.color_text_disabled))
-            }
-        }
+        binding.loadingProgress.progress = percent
+        binding.loadingStatus.text = message
     }
 
     override fun onDestroyView() {

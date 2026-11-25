@@ -261,6 +261,56 @@ class VlcLivePlayer(
         qualityLockHeight = maxHeight.coerceIn(0, 2160)
     }
 
+    private var preferredAudioLanguage: String? = null
+    private var subtitlesEnabled: Boolean = false
+
+    override fun setPreferredAudioLanguage(language: String?) {
+        preferredAudioLanguage = language?.takeIf { it.isNotBlank() }
+        applyTrackPreferences()
+    }
+
+    override fun setSubtitlesEnabled(enabled: Boolean) {
+        subtitlesEnabled = enabled
+        applyTrackPreferences()
+    }
+
+    /**
+     * Applies the audio-language / subtitle preferences to the running VLC
+     * player (v1.6 Settings). libVLC exposes no language tag on audio
+     * tracks, so the language is matched against the track NAME (e.g.
+     * "English", "eng", "Français") — best effort; if nothing matches,
+     * the default track stays. Called on Playing (tracks are known then)
+     * and whenever a preference changes mid-playback. Never throws.
+     */
+    private fun applyTrackPreferences() {
+        val player = vlcPlayer ?: return
+        runCatching {
+            val lang = preferredAudioLanguage
+            if (lang != null) {
+                val wanted = languageNames(lang) + lang
+                val tracks = player.audioTracks ?: emptyArray()
+                val match = tracks.firstOrNull { track ->
+                    wanted.any { w -> track.name?.contains(w, ignoreCase = true) == true }
+                }
+                if (match != null) player.setAudioTrack(match.id)
+            }
+            if (subtitlesEnabled) {
+                val spu = player.spuTracks ?: emptyArray()
+                if (spu.isNotEmpty()) player.setSpuTrack(spu.first().id)
+            } else {
+                player.setSpuTrack(-1)
+            }
+        }
+    }
+
+    private fun languageNames(code: String): List<String> = when (code.lowercase()) {
+        "en" -> listOf("English", "eng")
+        "fr" -> listOf("French", "Français", "Francais", "fre", "fra")
+        "ar" -> listOf("Arabic", "ara")
+        "es" -> listOf("Spanish", "Español", "Espanol", "spa")
+        else -> emptyList()
+    }
+
     override fun setVolume(volume: Float) {
         this.volume = volume.coerceIn(0f, 1f)
         // VLC volume is 0..200 (100 = 100%); never expose >100%.
@@ -392,6 +442,7 @@ class VlcLivePlayer(
             MediaPlayer.Event.Playing -> {
                 bufferingSinceMs = null
                 updateDuration()
+                applyTrackPreferences()
                 _state.value = PlaybackState.Playing
             }
             MediaPlayer.Event.Paused -> {

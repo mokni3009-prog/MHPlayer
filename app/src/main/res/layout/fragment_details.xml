@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/color_background">
+    android:background="@color/zeno_bg">
 
     <com.mhplayer.app.ui.SidebarView
         android:id="@+id/sidebar"
@@ -45,38 +45,38 @@
                         android:id="@+id/detailsTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Mystères de Paris"
+                        android:text="Mysteries of Paris"
                         android:textSize="40sp"
                         android:textStyle="bold"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/zeno_text_primary" />
 
                     <TextView
                         android:id="@+id/detailsMeta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="2024 • Drame • 2 saisons"
+                        android:text="2024 • Drama • 2 seasons"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="@color/color_text_secondary" />
+                        android:textColor="@color/zeno_text_secondary" />
 
                     <TextView
                         android:id="@+id/detailsPlot"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:text="Un inspecteur parisien traque un secret enfoui au cœur de la capitale."
+                        android:text="A Paris inspector hunts a secret buried in the heart of the capital."
                         android:textSize="20sp"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/zeno_text_primary" />
 
                     <TextView
                         android:id="@+id/hbbtvNote"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="HbbTV interactif non disponible sur cet appareil"
+                        android:text="Interactive HbbTV is not available on this device"
                         android:textSize="18sp"
-                        android:textColor="@color/color_text_muted"
+                        android:textColor="@color/zeno_text_muted"
                         android:visibility="gone" />
 
                     <LinearLayout
@@ -89,20 +89,32 @@
                             android:id="@+id/playButton"
                             android:layout_width="wrap_content"
                             android:layout_height="64dp"
-                            android:text="▶  Lecture"
+                            android:text="▶  Play"
                             android:paddingStart="40dp"
                             android:paddingEnd="40dp"
                             android:focusable="true"
-                            style="@style/Widget.MHPlayer.Button.Primary" />
+                            style="@style/Widget.Zeno.Button.Primary" />
 
                         <Button
                             android:id="@+id/infoButton"
                             android:layout_width="wrap_content"
                             android:layout_height="64dp"
                             android:layout_marginStart="16dp"
-                            android:text="Plus d'infos"
+                            android:text="More info"
                             android:focusable="true"
-                            style="@style/Widget.MHPlayer.Button.Secondary" />
+                            style="@style/Widget.Zeno.Button.Secondary" />
+
+                        <ImageView
+                            android:id="@+id/favoriteButton"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_marginStart="16dp"
+                            android:background="@drawable/bg_icon_circle"
+                            android:padding="18dp"
+                            android:src="@drawable/ic_favorite"
+                            android:focusable="true"
+                            android:clickable="true"
+                            android:contentDescription="@null" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -112,10 +124,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="48dp"
-                android:text="Saison 1"
+                android:text="Season 1"
                 android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="@color/color_text_primary" />
+                android:textColor="@color/zeno_text_primary" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/episodeList"
@@ -130,9 +142,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="48dp"
                 android:gravity="center"
-                android:text="Aucun contenu"
+                android:text="No content"
                 android:textSize="20sp"
-                android:textColor="@color/color_text_muted"
+                android:textColor="@color/zeno_text_muted"
                 android:visibility="gone" />
         </LinearLayout>
     </ScrollView>

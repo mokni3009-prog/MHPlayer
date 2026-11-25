@@ -16,6 +16,6 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/text_chip"
         android:textStyle="bold"
-        android:textColor="@color/color_text_primary" />
+        android:textColor="@color/zeno_text_primary" />
 
 </LinearLayout>

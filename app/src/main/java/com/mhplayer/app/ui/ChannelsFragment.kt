@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,16 +28,24 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
- * Channels: sidebar (Chaînes active), Bouquets column (selected = full red
- * bg), Chaînes column (selected channel = FULL red background), embedded
- * player window (channel name + red EN DIRECT badge).
+ * Zeno Play Live TV (approved reference): fixed sidebar (Live TV active),
+ * bouquets list and channels list inside dark panels, FLUSH top and
+ * bottom, the selected row highlighted with the gold->cyan left bar.
+ * Player window on the right with the channel name in the sidebar font
+ * and the current program (EPG) underneath, plus a gold heart to add the
+ * channel to Favorites.
  *
  * DPAD: left/right moves between columns, up/down in lists, OK selects /
  * plays a channel, OK on the player window -> fullscreen PlayerFragment.
- * Long-press a channel -> "Play with VLC" / "Play with ExoPlayer" override
- * (persisted via ChannelPlaybackEntity).
+ * Second tap on the same channel -> fullscreen (v1.5). Long-press a
+ * channel -> "Play with VLC" / "Play with ExoPlayer" override (persisted
+ * via ChannelPlaybackEntity). Long channel/bouquet names scroll like a
+ * news ticker (marquee) in the list rows.
  */
 class ChannelsFragment : Fragment() {
 
@@ -73,7 +83,9 @@ class ChannelsFragment : Fragment() {
                 SidebarView.Item.CHANNELS -> Unit
                 SidebarView.Item.MOVIES -> activity.navigateTo(MainActivity.Destination.MOVIES)
                 SidebarView.Item.SERIES -> activity.navigateTo(MainActivity.Destination.SERIES)
-                SidebarView.Item.PLAYLIST -> activity.navigateTo(MainActivity.Destination.PLAYLIST)
+                SidebarView.Item.FAVORITES -> activity.navigateTo(MainActivity.Destination.FAVORITES)
+                SidebarView.Item.SETTINGS -> activity.navigateTo(MainActivity.Destination.SETTINGS)
+                SidebarView.Item.ACCOUNT -> activity.navigateTo(MainActivity.Destination.ACCOUNT)
             }
         }
         val portrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -92,6 +104,7 @@ class ChannelsFragment : Fragment() {
         binding.miniFullscreenButton.setOnClickListener { openFullscreen() }
         binding.miniPlayButton.setOnClickListener { togglePlayPause() }
         binding.miniVolumeButton.setOnClickListener { toggleMute() }
+        binding.favoriteButton.setOnClickListener { toggleFavorite() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             val app = requireContext().app()
@@ -170,13 +183,80 @@ class ChannelsFragment : Fragment() {
         currentChannel = channel
         channelAdapter.selectedStreamId = channel.streamId
         binding.channelTitle.text = channel.name
-        binding.channelSubtitle.text = channel.name
+        binding.channelTitle.isSelected = true // marquee: long names scroll
         binding.liveBadge.visibility = View.VISIBLE
+        app.sessionManager.addRecentItem("live", channel.streamId)
+        refreshFavoriteIcon()
+        loadEpg(channel)
         val item = PlaybackHelper.livePlayItem(creds, channel)
         app.dualPlayer.play(
             item.copy(engineHint = engineHint),
             PlaybackHelper.liveUrlProvider(creds, channel.streamId),
         )
+    }
+
+    /** Loads the short EPG (current + next program) under the player. */
+    private fun loadEpg(channel: LiveChannel) {
+        binding.epgNowTitle.text = getString(R.string.live_no_epg)
+        binding.epgNowTime.text = ""
+        binding.epgNextTitle.visibility = View.GONE
+        viewLifecycleOwner.lifecycleScope.launch {
+            val app = requireContext().app()
+            val programs = app.repository.getShortEpg(channel.streamId)
+            if (!isAdded || currentChannel?.streamId != channel.streamId) return@launch
+            val now = System.currentTimeMillis() / 1000L
+            val current = programs.firstOrNull { it.startTimestamp <= now && now < it.stopTimestamp }
+                ?: programs.firstOrNull { it.stopTimestamp > now }
+            if (current == null) {
+                binding.epgNowTitle.text = getString(R.string.live_no_epg)
+                return@launch
+            }
+            binding.epgNowTitle.text = current.title
+            val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            binding.epgNowTime.text = buildString {
+                if (current.startTimestamp > 0L) {
+                    append(timeFormat.format(Date(current.startTimestamp * 1000L)))
+                }
+                if (current.stopTimestamp > 0L) {
+                    append(" - ")
+                    append(timeFormat.format(Date(current.stopTimestamp * 1000L)))
+                }
+            }
+            val next = programs.firstOrNull { it.startTimestamp >= current.stopTimestamp }
+            if (next != null && next.title.isNotBlank()) {
+                binding.epgNextTitle.text = getString(R.string.live_next) + ": " + next.title
+                binding.epgNextTitle.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    /** Gold heart when the channel is a favorite, muted otherwise. */
+    private fun refreshFavoriteIcon() {
+        val channel = currentChannel ?: return
+        viewLifecycleOwner.lifecycleScope.launch {
+            val isFav = requireContext().app().repository.isFavorite("live", channel.streamId)
+            if (!isAdded || currentChannel?.streamId != channel.streamId) return@launch
+            binding.favoriteButton.setColorFilter(
+                ContextCompat.getColor(
+                    requireContext(),
+                    if (isFav) R.color.zeno_gold else R.color.zeno_text_muted,
+                ),
+            )
+        }
+    }
+
+    private fun toggleFavorite() {
+        val channel = currentChannel ?: return
+        viewLifecycleOwner.lifecycleScope.launch {
+            val added = requireContext().app().repository.toggleFavorite("live", channel.streamId)
+            if (!isAdded) return@launch
+            refreshFavoriteIcon()
+            Toast.makeText(
+                requireContext(),
+                if (added) R.string.vod_added_favorite else R.string.vod_removed_favorite,
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
     }
 
     private fun openFullscreen() {

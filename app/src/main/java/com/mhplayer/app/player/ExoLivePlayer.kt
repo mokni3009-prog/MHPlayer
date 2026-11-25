@@ -399,6 +399,19 @@ class ExoLivePlayer(
         applyTrackCaps()
     }
 
+    private var preferredAudioLanguage: String? = null
+    private var subtitlesEnabled: Boolean = false
+
+    override fun setPreferredAudioLanguage(language: String?) {
+        preferredAudioLanguage = language?.takeIf { it.isNotBlank() }
+        applyTrackCaps()
+    }
+
+    override fun setSubtitlesEnabled(enabled: Boolean) {
+        subtitlesEnabled = enabled
+        applyTrackCaps()
+    }
+
     /**
      * Re-prepares the current item, resuming VOD at [positionMs] (a seek
      * issued right after `prepare()` is honoured once ready). For live items
@@ -470,6 +483,13 @@ class ExoLivePlayer(
         val builder = trackSelector.buildUponParameters()
             .setMaxVideoSize(maxWidth, maxHeight)
             .setTunnelingEnabled(tunnelingEnabled)
+        // Audio language + subtitles (v1.6 Settings).
+        val audioLang = preferredAudioLanguage
+        if (audioLang != null) {
+            builder.setPreferredAudioLanguage(audioLang)
+            if (subtitlesEnabled) builder.setPreferredTextLanguage(audioLang)
+        }
+        builder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !subtitlesEnabled)
         if (isTvProfile) {
             // H616: no AV1 HW decoder. Prefer HEVC, then AVC; AV1 is excluded
             // from the preferred list (report §§1.8, 6.4).

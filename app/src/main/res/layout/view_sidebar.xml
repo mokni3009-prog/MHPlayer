@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Shared narrow sidebar (DESIGN_TOKENS.md §1.4): logo + menu, "Ma playlist" pinned at the bottom. -->
+<!-- Zeno Play sidebar (v1.6): FIXED and identical on every screen — same logo,
+     same sections, same spacing. Only the active section changes.
+     Order: Home, Live TV, Movies, Series, Favorites, Settings, Account
+     (Account pinned at the bottom). -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
@@ -14,9 +17,9 @@
 
         <ImageView
             android:id="@+id/sidebarLogoIcon"
-            android:layout_width="@dimen/sidebar_logo_icon"
-            android:layout_height="@dimen/sidebar_logo_icon"
-            android:src="@drawable/logo_play"
+            android:layout_width="@dimen/sidebar_logo_image"
+            android:layout_height="@dimen/sidebar_logo_image"
+            android:src="@drawable/logo_zeno"
             android:contentDescription="@null" />
 
         <TextView
@@ -24,10 +27,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/sidebar_logo_text_margin"
-            android:text="MH Player"
+            android:text="@string/app_name"
             android:textSize="@dimen/text_sidebar_logo"
             android:textStyle="bold"
-            android:textColor="@color/color_text_primary" />
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_gold" />
     </LinearLayout>
 
     <LinearLayout
@@ -51,6 +55,14 @@
         <include
             android:id="@+id/itemSeries"
             layout="@layout/item_sidebar" />
+
+        <include
+            android:id="@+id/itemFavorites"
+            layout="@layout/item_sidebar" />
+
+        <include
+            android:id="@+id/itemSettings"
+            layout="@layout/item_sidebar" />
     </LinearLayout>
 
     <View
@@ -60,7 +72,7 @@
         android:layout_weight="1" />
 
     <include
-        android:id="@+id/itemPlaylist"
+        android:id="@+id/itemAccount"
         layout="@layout/item_sidebar" />
 
 </merge>

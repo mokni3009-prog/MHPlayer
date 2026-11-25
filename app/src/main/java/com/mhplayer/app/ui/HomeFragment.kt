@@ -8,31 +8,46 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import coil.load
 import com.mhplayer.app.MainActivity
-import com.mhplayer.app.R
 import com.mhplayer.app.app
+import com.mhplayer.app.data.model.LiveChannel
 import com.mhplayer.app.data.model.SeriesItem
 import com.mhplayer.app.data.model.VodItem
 import com.mhplayer.app.databinding.FragmentHomeBinding
+import com.mhplayer.app.ui.adapters.FeaturedChannelAdapter
 import com.mhplayer.app.ui.adapters.PosterAdapter
-import com.mhplayer.app.ui.adapters.RowAdapter
 import kotlinx.coroutines.launch
 
 /**
- * Home: narrow sidebar (Accueil active), hero "Film à la une" + red
- * Lecture button, rows "Films populaires" and "Séries" (6 posters each).
- * Poster click -> DetailsFragment; Lecture -> PlayerFragment.
+ * Zeno Play Home (approved reference): fixed sidebar (Home active),
+ * search icon + profile avatar top-right, "Featured Live Channels"
+ * (horizontal cards with LIVE badge), "Continue Watching" (recently
+ * played first, then newest movies) and "New Releases" (newest movies
+ * by stream id). Poster tap -> Details; featured channel tap -> the
+ * fullscreen player.
  */
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private var heroVod: VodItem? = null
-    private var heroSeries: SeriesItem? = null
+    private var liveList: List<LiveChannel> = emptyList()
     private var vodList: List<VodItem> = emptyList()
     private var seriesList: List<SeriesItem> = emptyList()
+
+    private val featuredAdapter = FeaturedChannelAdapter { channel ->
+        val app = requireContext().app()
+        app.sessionManager.addRecentItem("live", channel.streamId)
+        (requireActivity() as MainActivity).openPlayer(PlaybackHelper.liveArgs(channel))
+    }
+
+    private val continueAdapter = PosterAdapter(style = PosterAdapter.Style.NONE) { poster ->
+        openPoster(poster)
+    }
+
+    private val newAdapter = PosterAdapter(style = PosterAdapter.Style.NONE) { poster ->
+        openPoster(poster)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +61,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val activity = requireActivity() as MainActivity
-        binding.sidebar.setFloating(true)
         binding.sidebar.setSelected(SidebarView.Item.HOME)
         binding.sidebar.onItemSelected = { item ->
             when (item) {
@@ -54,81 +68,103 @@ class HomeFragment : Fragment() {
                 SidebarView.Item.CHANNELS -> activity.navigateTo(MainActivity.Destination.CHANNELS)
                 SidebarView.Item.MOVIES -> activity.navigateTo(MainActivity.Destination.MOVIES)
                 SidebarView.Item.SERIES -> activity.navigateTo(MainActivity.Destination.SERIES)
-                SidebarView.Item.PLAYLIST -> activity.navigateTo(MainActivity.Destination.PLAYLIST)
+                SidebarView.Item.FAVORITES -> activity.navigateTo(MainActivity.Destination.FAVORITES)
+                SidebarView.Item.SETTINGS -> activity.navigateTo(MainActivity.Destination.SETTINGS)
+                SidebarView.Item.ACCOUNT -> activity.navigateTo(MainActivity.Destination.ACCOUNT)
             }
         }
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             binding.sidebar.setHorizontal(true)
         }
 
-        binding.rowsList.layoutManager = LinearLayoutManager(requireContext())
-        binding.rowsList.isNestedScrollingEnabled = false
+        binding.searchButton.setOnClickListener {
+            SearchDialog().show(parentFragmentManager, "search")
+        }
+        binding.profileAvatar.setOnClickListener {
+            activity.navigateTo(MainActivity.Destination.ACCOUNT)
+        }
 
-        binding.heroPlayButton.setOnClickListener {
-            heroVod?.let { activity.openPlayer(PlaybackHelper.vodArgs(it)) }
-                ?: heroSeries?.let { activity.openDetails(PlaybackHelper.seriesDetailsArgs(it)) }
-        }
-        binding.heroInfoButton.setOnClickListener {
-            heroVod?.let { activity.openDetails(PlaybackHelper.vodDetailsArgs(it)) }
-                ?: heroSeries?.let { activity.openDetails(PlaybackHelper.seriesDetailsArgs(it)) }
-        }
+        binding.featuredList.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.featuredList.adapter = featuredAdapter
+        binding.continueList.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.continueList.adapter = continueAdapter
+        binding.newList.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.newList.adapter = newAdapter
 
         viewLifecycleOwner.lifecycleScope.launch {
             val app = requireContext().app()
+            liveList = app.repository.getAllLiveChannels()
             vodList = app.repository.getAllVod()
             seriesList = app.repository.getAllSeries()
             if (!isAdded) return@launch
 
-            heroVod = vodList.firstOrNull()
-            heroSeries = seriesList.firstOrNull()
-            if (heroVod != null) {
-                binding.heroTitle.text = heroVod!!.name
-                binding.heroSynopsis.text = heroVod!!.plot
-                    ?: "Un thriller haletant dans une ville sous la pluie. Trahisons, secrets et enquête nocturne."
-                binding.heroImage.load(heroVod!!.icon) {
-                    placeholder(R.drawable.poster_placeholder)
-                    error(R.drawable.poster_placeholder)
-                }
-            } else if (heroSeries != null) {
-                binding.heroTitle.text = heroSeries!!.name
-                binding.heroSynopsis.text = heroSeries!!.plot
-                    ?: "Un thriller haletant dans une ville sous la pluie. Trahisons, secrets et enquête nocturne."
-                binding.heroImage.load(heroSeries!!.cover) {
-                    placeholder(R.drawable.poster_placeholder)
-                    error(R.drawable.poster_placeholder)
-                }
-            }
+            // Featured: the first live channels (up to 8).
+            val featured = liveList.take(8)
+            featuredAdapter.submitList(featured)
+            binding.featuredEmpty.visibility =
+                if (featured.isEmpty()) View.VISIBLE else View.GONE
 
-            val sections = mutableListOf<RowAdapter.RowSection>()
-            if (vodList.isNotEmpty()) {
-                sections += RowAdapter.RowSection(
-                    "Films populaires",
-                    vodList.take(6).map { PosterAdapter.PosterItem(it.streamId, it.name, it.icon) },
-                )
+            // Continue Watching: recently played first, then newest movies.
+            val recent = app.sessionManager.getRecentItems()
+            val continueItems = mutableListOf<PosterAdapter.PosterItem>()
+            val seenIds = mutableSetOf<String>()
+            for (entry in recent) {
+                val (type, id) = entry.split(":").let {
+                    if (it.size == 2) it[0] to (it[1].toIntOrNull() ?: -1) else "" to -1
+                }
+                if (id < 0) continue
+                val item = when (type) {
+                    "live" -> liveList.firstOrNull { it.streamId == id }
+                        ?.let { PosterAdapter.PosterItem(it.streamId, it.name, it.icon) }
+                    "vod" -> vodList.firstOrNull { it.streamId == id }
+                        ?.let { PosterAdapter.PosterItem(it.streamId, it.name, it.icon, it.rating) }
+                    "series" -> seriesList.firstOrNull { it.seriesId == id }
+                        ?.let { PosterAdapter.PosterItem(it.seriesId, it.name, it.cover, it.rating) }
+                    else -> null
+                }
+                if (item != null && seenIds.add("$type:$id")) continueItems += item
             }
-            if (seriesList.isNotEmpty()) {
-                sections += RowAdapter.RowSection(
-                    "Séries",
-                    seriesList.take(6).map { PosterAdapter.PosterItem(it.seriesId, it.name, it.cover) },
-                )
+            val newestVod = vodList.sortedByDescending { it.streamId }
+            for (vod in newestVod) {
+                if (continueItems.size >= 10) break
+                if (seenIds.add("vod:${vod.streamId}")) {
+                    continueItems += PosterAdapter.PosterItem(vod.streamId, vod.name, vod.icon, vod.rating)
+                }
             }
-            binding.rowsList.adapter = RowAdapter(sections) { poster ->
-                openPoster(poster)
+            continueAdapter.submitList(continueItems)
+            binding.continueEmpty.visibility =
+                if (continueItems.isEmpty()) View.VISIBLE else View.GONE
+
+            // New Releases: newest movies by stream id (no added-date field
+            // exists on the panel — the stream id grows with new content).
+            val newItems = newestVod.take(10).map {
+                PosterAdapter.PosterItem(it.streamId, it.name, it.icon, it.rating)
             }
-            binding.emptyText.visibility =
-                if (sections.isEmpty()) View.VISIBLE else View.GONE
-            FocusHelper.requestFocus(binding.heroPlayButton)
+            newAdapter.submitList(newItems)
+            binding.newEmpty.visibility =
+                if (newItems.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
     private fun openPoster(poster: PosterAdapter.PosterItem) {
         val activity = requireActivity() as MainActivity
+        val app = requireContext().app()
         vodList.firstOrNull { it.streamId == poster.id }?.let {
+            app.sessionManager.addRecentItem("vod", it.streamId)
             activity.openDetails(PlaybackHelper.vodDetailsArgs(it))
             return
         }
         seriesList.firstOrNull { it.seriesId == poster.id }?.let {
+            app.sessionManager.addRecentItem("series", it.seriesId)
             activity.openDetails(PlaybackHelper.seriesDetailsArgs(it))
+            return
+        }
+        liveList.firstOrNull { it.streamId == poster.id }?.let {
+            app.sessionManager.addRecentItem("live", it.streamId)
+            activity.openPlayer(PlaybackHelper.liveArgs(it))
         }
     }
 

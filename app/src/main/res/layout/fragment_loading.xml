@@ -1,250 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Loading — modern redesign (v1.4, designer graphique): logo badge +
-     wordmark, thin ring on a dark track, slim gradient progress bar, big
-     percent, status, steps as modern pills (done = green check, active =
-     red dot, pending = grey). Same content as the approved screen.
-     Responsive (v1.3): ScrollView + ConstraintLayout packed chain, sizes
-     from the screen-size dimens buckets. -->
+<!-- Zeno Play loading screen (approved reference): Z logo + "Zeno Play" in
+     gold + tagline, thin gold->cyan progress bar, "Loading Xtream Codes..."
+     below. ScrollView keeps everything reachable on short phone screens. -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_login_gradient"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
 
-        <LinearLayout
-            android:id="@+id/logoRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:layout_constraintVertical_bias="0.5">
-
-            <FrameLayout
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_logo_badge">
-
-                <ImageView
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/logo_play_white"
-                    android:contentDescription="@null" />
-            </FrameLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/logo_text_margin"
-                android:text="MH Player"
-                android:textSize="@dimen/text_loading_logo"
-                android:textStyle="bold"
-                android:textColor="@color/color_text_primary" />
-        </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progressRing"
-            android:layout_width="@dimen/loading_ring_size"
-            android:layout_height="@dimen/loading_ring_size"
-            android:layout_marginTop="16dp"
-            android:max="100"
-            android:progress="62"
-            android:progressDrawable="@drawable/progress_ring"
-            app:layout_constraintTop_toBottomOf="@id/logoRow"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="0dp"
-            android:layout_height="6dp"
-            android:layout_marginTop="16dp"
-            android:max="100"
-            android:progress="62"
-            android:progressDrawable="@drawable/bg_progress_bar"
-            style="?android:attr/progressBarStyleHorizontal"
-            app:layout_constraintTop_toBottomOf="@id/progressRing"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_max="@dimen/loading_bar_width" />
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="112dp"
+            android:layout_marginTop="48dp"
+            android:src="@drawable/logo_zeno"
+            android:contentDescription="@null" />
 
         <TextView
-            android:id="@+id/percentText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="62%"
-            android:textSize="@dimen/text_percent"
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="@color/color_text_primary"
-            app:layout_constraintTop_toBottomOf="@id/progressBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_gold" />
 
         <TextView
-            android:id="@+id/statusText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Chargement des films…"
-            android:textSize="@dimen/text_status"
-            android:textColor="@color/color_text_secondary"
-            app:layout_constraintTop_toBottomOf="@id/percentText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="4dp"
+            android:text="@string/app_tagline"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_secondary" />
 
-        <LinearLayout
-            android:id="@+id/stepsRow"
+        <ProgressBar
+            android:id="@+id/loadingProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="@dimen/loading_bar_width"
+            android:layout_height="6dp"
+            android:layout_marginTop="48dp"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/bg_progress_bar" />
+
+        <TextView
+            android:id="@+id/loadingStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/statusText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_step_pill"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp">
-
-                <TextView
-                    android:id="@+id/stepLiveIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="✓"
-                    android:textSize="@dimen/text_steps"
-                    android:textStyle="bold"
-                    android:textColor="@color/color_success_green" />
-
-                <TextView
-                    android:id="@+id/stepLiveLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Chaînes"
-                    android:textSize="@dimen/text_steps"
-                    android:textStyle="bold"
-                    android:textColor="@color/color_success_green" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_step_pill"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:layout_marginStart="@dimen/steps_gap">
-
-                <TextView
-                    android:id="@+id/stepVodIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="●"
-                    android:textSize="@dimen/text_steps"
-                    android:textColor="@color/color_primary_red" />
-
-                <TextView
-                    android:id="@+id/stepVodLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Films"
-                    android:textSize="@dimen/text_steps"
-                    android:textStyle="bold"
-                    android:textColor="@color/color_primary_red" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_step_pill"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:layout_marginStart="@dimen/steps_gap">
-
-                <TextView
-                    android:id="@+id/stepSeriesIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="○"
-                    android:textSize="@dimen/text_steps"
-                    android:textColor="@color/color_text_disabled" />
-
-                <TextView
-                    android:id="@+id/stepSeriesLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Séries"
-                    android:textSize="@dimen/text_steps"
-                    android:textStyle="bold"
-                    android:textColor="@color/color_text_disabled" />
-            </LinearLayout>
-        </LinearLayout>
+            android:text="@string/loading_text"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_secondary" />
 
         <TextView
             android:id="@+id/errorText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="@dimen/text_error"
-            android:textColor="@color/color_primary_red"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/stepsRow"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="@string/error_generic"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="#FF6B6B"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/retryButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height"
-            android:layout_marginTop="8dp"
-            android:text="Réessayer"
+            android:layout_marginTop="16dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="@string/retry"
             android:visibility="gone"
-            style="@style/Widget.MHPlayer.Button.Primary"
-            app:layout_constraintTop_toBottomOf="@id/errorText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            style="@style/Widget.Zeno.Button.Primary" />
 
-        <TextView
-            android:id="@+id/loadingFooter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:text="Ma playlist"
-            android:textSize="@dimen/text_loading_footer"
-            android:textColor="@color/color_text_disabled"
-            app:layout_constraintTop_toBottomOf="@id/retryButton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </ScrollView>

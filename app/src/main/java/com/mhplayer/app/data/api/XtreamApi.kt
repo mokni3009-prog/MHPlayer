@@ -4,6 +4,8 @@ import com.mhplayer.app.data.model.AuthResult
 import com.mhplayer.app.data.model.Category
 import com.mhplayer.app.data.model.CategoryDto
 import com.mhplayer.app.data.model.Credentials
+import com.mhplayer.app.data.model.EpgListingDto
+import com.mhplayer.app.data.model.EpgProgram
 import com.mhplayer.app.data.model.LiveChannel
 import com.mhplayer.app.data.model.LiveStreamDto
 import com.mhplayer.app.data.model.Season
@@ -41,6 +43,9 @@ interface XtreamApi {
     suspend fun getSeriesCategories(): List<Category>
     suspend fun getSeries(categoryId: String): List<SeriesItem>
     suspend fun getSeriesInfo(seriesId: Int): List<Season>
+
+    /** Short EPG for one live channel (current + next programs). */
+    suspend fun getShortEpg(streamId: Int): List<EpgProgram>
 }
 
 class XtreamApiImpl(
@@ -159,6 +164,24 @@ class XtreamApiImpl(
             if (body.isBlank()) return@withContext emptyList()
             val dto = json.decodeFromString<SeriesInfoDto>(body)
             dto.toSeasons()
+        }
+
+    /**
+     * Short EPG (v1.6): `get_short_epg&stream_id=...` returns an object
+     * `{ "epg_listings": [...] }`, not an array, so it cannot use [getList].
+     * A panel without EPG (or an error body) yields an empty list — the
+     * Live TV screen shows "No program information" instead of crashing.
+     */
+    override suspend fun getShortEpg(streamId: Int): List<EpgProgram> =
+        withContext(Dispatchers.IO) {
+            val body = getRaw(
+                action = "get_short_epg",
+                extraParams = mapOf("stream_id" to streamId.toString()),
+            )
+            if (body.isBlank()) return@withContext emptyList()
+            val dto = runCatching { json.decodeFromString<EpgListingDto>(body) }
+                .getOrNull() ?: return@withContext emptyList()
+            dto.epg_listings.map { it.toModel() }
         }
 
     // -- Internals ------------------------------------------------------------

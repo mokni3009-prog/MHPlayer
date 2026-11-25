@@ -3,16 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/color_card_bg"
+    android:background="@drawable/bg_dialog_modern"
     android:padding="@dimen/card_padding">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Lecteur"
+        android:text="Player"
         android:textSize="@dimen/text_dialog_title"
         android:textStyle="bold"
-        android:textColor="@color/color_text_primary" />
+        android:textColor="@color/zeno_text_primary" />
 
     <RadioGroup
         android:id="@+id/engineGroup"
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Auto"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <RadioButton
             android:id="@+id/engineExo"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/form_gap"
             android:text="ExoPlayer"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <RadioButton
             android:id="@+id/engineVlc"
@@ -42,17 +42,17 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/form_gap"
             android:text="VLC"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
     </RadioGroup>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/form_margin_top"
-        android:text="Qualité"
+        android:text="Quality"
         android:textSize="@dimen/text_dialog_title"
         android:textStyle="bold"
-        android:textColor="@color/color_text_primary" />
+        android:textColor="@color/zeno_text_primary" />
 
     <RadioGroup
         android:id="@+id/qualityGroup"
@@ -66,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Auto"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <RadioButton
             android:id="@+id/quality1080"
@@ -74,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/form_gap"
             android:text="1080p"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <RadioButton
             android:id="@+id/quality720"
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/form_gap"
             android:text="720p"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <RadioButton
             android:id="@+id/quality480"
@@ -90,17 +90,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/form_gap"
             android:text="480p"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
     </RadioGroup>
 
     <TextView
+        android:id="@+id/containerTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/form_margin_top"
         android:text="Format"
         android:textSize="@dimen/text_dialog_title"
         android:textStyle="bold"
-        android:textColor="@color/color_text_primary" />
+        android:textColor="@color/zeno_text_primary" />
 
     <RadioGroup
         android:id="@+id/containerGroup"
@@ -114,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Auto"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <RadioButton
             android:id="@+id/containerHls"
@@ -122,7 +123,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/form_gap"
             android:text="HLS"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
 
         <RadioButton
             android:id="@+id/containerTs"
@@ -130,7 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/form_gap"
             android:text="TS"
-            android:textColor="@color/color_text_primary" />
+            android:textColor="@color/zeno_text_primary" />
     </RadioGroup>
 
     <Button
@@ -139,5 +140,5 @@
         android:layout_height="@dimen/button_height"
         android:layout_marginTop="@dimen/form_margin_top"
         android:text="OK"
-        style="@style/Widget.MHPlayer.Button.Primary" />
+        style="@style/Widget.Zeno.Button.Primary" />
 </LinearLayout>

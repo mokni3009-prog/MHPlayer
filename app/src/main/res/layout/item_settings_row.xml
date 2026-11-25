@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One Settings row: icon + title + description + switch (toggle rows)
+     or chevron (action rows that open a dialog). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/settings_row_height"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_card"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:layout_marginBottom="8dp"
+    android:focusable="true"
+    android:clickable="true">
+
+    <ImageView
+        android:id="@+id/settingIcon"
+        android:layout_width="@dimen/settings_icon_size"
+        android:layout_height="@dimen/settings_icon_size"
+        android:background="@drawable/bg_icon_circle"
+        android:padding="9dp"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="14dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/settingTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_primary" />
+
+        <TextView
+            android:id="@+id/settingDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_muted" />
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/settingSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        style="@style/Widget.Zeno.Switch" />
+
+    <ImageView
+        android:id="@+id/settingChevron"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:rotation="180"
+        android:src="@drawable/ic_back"
+        android:visibility="gone"
+        android:contentDescription="@null" />
+
+</LinearLayout>

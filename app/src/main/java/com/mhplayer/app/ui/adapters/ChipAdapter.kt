@@ -47,6 +47,13 @@ class ChipAdapter(
         holder.binding.root.setBackgroundResource(
             if (selected) R.drawable.bg_chip_selected else R.drawable.bg_chip_unselected,
         )
+        // Dark text on the gold->cyan gradient, white on the dark pill.
+        holder.binding.chipLabel.setTextColor(
+            androidx.core.content.ContextCompat.getColor(
+                holder.itemView.context,
+                if (selected) R.color.zeno_text_on_gradient else R.color.zeno_text_primary,
+            ),
+        )
     }
 
     override fun getItemCount(): Int = chips.size

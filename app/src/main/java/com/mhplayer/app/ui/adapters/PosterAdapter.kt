@@ -27,7 +27,7 @@ class PosterAdapter(
 
     enum class Style { NONE, BELOW, BAR }
 
-    data class PosterItem(val id: Int, val title: String, val imageUrl: String?)
+    data class PosterItem(val id: Int, val title: String, val imageUrl: String?, val rating: Double? = null)
 
     private inner class PosterViewHolder(val binding: ItemPosterBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -74,6 +74,7 @@ class PosterAdapter(
                 holder.binding.posterTitle.text = item.title
                 holder.binding.posterTitle.visibility =
                     if (style == Style.BELOW) View.VISIBLE else View.GONE
+                bindRating(holder.binding.posterRating, item.rating)
             }
             is BarViewHolder -> {
                 holder.binding.posterImage.load(item.imageUrl) {
@@ -82,7 +83,18 @@ class PosterAdapter(
                     transformations(RoundedCornersTransformation(12f, 12f, 0f, 0f))
                 }
                 holder.binding.posterTitle.text = item.title
+                bindRating(holder.binding.posterRating, item.rating)
             }
+        }
+    }
+
+    /** Shows "★ 8.5" when the item has a rating, hides the badge otherwise. */
+    private fun bindRating(view: android.widget.TextView, rating: Double?) {
+        if (rating != null && rating > 0.0) {
+            view.text = "★ %.1f".format(rating)
+            view.visibility = View.VISIBLE
+        } else {
+            view.visibility = View.GONE
         }
     }
 

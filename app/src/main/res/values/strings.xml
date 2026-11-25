@@ -1,9 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Zeno Play strings (v1.6): English, exactly as in the approved reference
+     images. The approved images are in English, so the whole UI is English. -->
 <resources>
-    <string name="app_name">MH Player</string>
-    <string name="sidebar_home">Accueil</string>
-    <string name="sidebar_channels">Chaînes</string>
-    <string name="sidebar_movies">Films</string>
-    <string name="sidebar_series">Séries</string>
-    <string name="sidebar_playlist">Ma playlist</string>
+    <string name="app_name">Zeno Play</string>
+    <string name="app_tagline">Xtream &amp; M3U Media Player</string>
+
+    <!-- Sidebar (fixed, identical on every screen) -->
+    <string name="sidebar_home">Home</string>
+    <string name="sidebar_channels">Live TV</string>
+    <string name="sidebar_movies">Movies</string>
+    <string name="sidebar_series">Series</string>
+    <string name="sidebar_favorites">Favorites</string>
+    <string name="sidebar_settings">Settings</string>
+    <string name="sidebar_account">Account</string>
+
+    <!-- Loading -->
+    <string name="loading_text">Loading Xtream Codes...</string>
+    <string name="loading_categories">Loading categories...</string>
+    <string name="loading_channels">Loading channels...</string>
+    <string name="loading_movies">Loading movies...</string>
+    <string name="loading_series">Loading series...</string>
+    <string name="loading_done">Done</string>
+    <string name="loading_preparing">Preparing your content...</string>
+
+    <!-- Login -->
+    <string name="login_url_hint">Enter Portal URL e.g. http://example.com:8080</string>
+    <string name="login_username_hint">Enter Username</string>
+    <string name="login_password_hint">Enter Password</string>
+    <string name="login_playlist_hint">Enter Playlist Name e.g. Family Room TV</string>
+    <string name="login_playlist_optional">Playlist Name (Optional)</string>
+    <string name="login_save_account">Save Account Information</string>
+    <string name="login_sign_in">Sign In</string>
+    <string name="login_forgot">Forgot Password?</string>
+    <string name="login_add_user">Add User</string>
+    <string name="login_need_code">Need an Xtream Code? Contact your provider.</string>
+    <string name="login_tab_xtream">Xtream Codes</string>
+    <string name="login_tab_m3u">Playlist M3U</string>
+    <string name="login_m3u_url_hint">Enter M3U Playlist URL</string>
+    <string name="login_error_fill_all">Please fill in all fields</string>
+    <string name="login_error_invalid">Invalid credentials or server unreachable</string>
+    <string name="login_error_network">Network error — please check your connection</string>
+
+    <!-- Home -->
+    <string name="home_featured">Featured Live Channels</string>
+    <string name="home_continue">Continue Watching</string>
+    <string name="home_new">New Releases</string>
+    <string name="home_search_hint">Search channels, movies, series...</string>
+    <string name="home_no_continue">Nothing to continue yet — play something and it will appear here</string>
+    <string name="home_no_new">No new releases yet</string>
+    <string name="home_no_featured">No live channels yet</string>
+    <string name="search_title">Search</string>
+    <string name="search_no_results">No results for "%1$s"</string>
+    <string name="search_empty">Type to search channels, movies and series</string>
+
+    <!-- Live TV -->
+    <string name="live_now">Now</string>
+    <string name="live_next">Next</string>
+    <string name="live_no_epg">No program information</string>
+    <string name="live_no_channels">No channels in this category</string>
+    <string name="live_no_bouquets">No categories</string>
+    <string name="live_add_favorite">Add to Favorites</string>
+    <string name="live_channel_info">Channel Info</string>
+
+    <!-- Movies / Series -->
+    <string name="movies_watch_now">Watch Now</string>
+    <string name="movies_add_list">Add to List</string>
+    <string name="movies_trending">Trending Movies</string>
+    <string name="movies_action">Action &amp; Adventure</string>
+    <string name="movies_all">All Movies</string>
+    <string name="series_trending">Trending Series</string>
+    <string name="series_drama">Drama &amp; Fantasy</string>
+    <string name="series_all">All Series</string>
+    <string name="vod_no_poster">No poster</string>
+    <string name="vod_episode">Episode %1$d</string>
+    <string name="vod_season">Season %1$d</string>
+    <string name="vod_unknown">Unknown</string>
+    <string name="vod_added_favorite">Added to Favorites</string>
+    <string name="vod_removed_favorite">Removed from Favorites</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_live">Live Channels</string>
+    <string name="favorites_movies_series">Movies &amp; Series</string>
+    <string name="favorites_empty">No favorites yet — tap the heart on a channel, movie or series to add it here</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_player">Player</string>
+    <string name="settings_player_desc">Engine, quality and playback</string>
+    <string name="settings_subtitles">Subtitles</string>
+    <string name="settings_subtitles_desc">Show subtitles when available</string>
+    <string name="settings_audio">Audio Language</string>
+    <string name="settings_audio_desc">Preferred audio language</string>
+    <string name="settings_quality">Video Quality</string>
+    <string name="settings_quality_desc">Maximum video quality</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_desc">Theme and display</string>
+    <string name="settings_parental">Parental Control</string>
+    <string name="settings_parental_desc">Hide adult content</string>
+    <string name="settings_updates">Updates</string>
+    <string name="settings_updates_desc">Check for a new version</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_desc">Version and information</string>
+    <string name="settings_engine">Playback Engine</string>
+    <string name="settings_engine_auto">Automatic (recommended)</string>
+    <string name="settings_engine_exo">ExoPlayer</string>
+    <string name="settings_engine_vlc">VLC</string>
+    <string name="settings_quality_auto">Auto (highest available)</string>
+    <string name="settings_quality_1080">1080p Full HD</string>
+    <string name="settings_quality_720">720p HD</string>
+    <string name="settings_quality_480">480p</string>
+    <string name="settings_lang_auto">Automatic</string>
+    <string name="settings_lang_en">English</string>
+    <string name="settings_lang_fr">French</string>
+    <string name="settings_lang_ar">Arabic</string>
+    <string name="settings_lang_es">Spanish</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_checking_update">Checking for updates...</string>
+    <string name="settings_update_available">A new version (v%1$s) is available</string>
+    <string name="settings_update_none">You already have the latest version</string>
+    <string name="settings_about_text">Zeno Play %1$s\nXtream &amp; M3U Media Player</string>
+
+    <!-- Account -->
+    <string name="account_title">Account</string>
+    <string name="account_premium">Premium</string>
+    <string name="account_standard">Standard</string>
+    <string name="account_expires">Expires</string>
+    <string name="account_status">Status</string>
+    <string name="account_active">Active</string>
+    <string name="account_expired">Expired</string>
+    <string name="account_max_connections">Max connections</string>
+    <string name="account_created">Created</string>
+    <string name="account_edit">Edit Profile</string>
+    <string name="account_sign_out">Sign Out</string>
+    <string name="account_sign_out_confirm">Sign out of this account?</string>
+    <string name="account_no_info">No subscription information</string>
+
+    <!-- Player -->
+    <string name="player_live">LIVE</string>
+    <string name="player_buffering">Buffering...</string>
+    <string name="player_error">Playback error — retrying...</string>
+    <string name="player_fullscreen_hint">Tap again on the channel to open fullscreen</string>
+
+    <!-- Update dialog -->
+    <string name="update_title">Update available</string>
+    <string name="update_message">A new version (v%1$s) of Zeno Play is available.</string>
+    <string name="update_button">Update</string>
+    <string name="update_later">Later</string>
+    <string name="update_downloading">Downloading update...</string>
+    <string name="update_install_permission">Please allow installing apps from this source to update Zeno Play.</string>
+    <string name="update_open_settings">Open Settings</string>
+
+    <!-- Generic -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
+    <string name="close">Close</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="loading">Loading...</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
 </resources>

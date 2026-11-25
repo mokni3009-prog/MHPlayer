@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <solid android:color="#30312C" />
+            <solid android:color="@color/zeno_track" />
             <corners android:radius="3dp" />
         </shape>
     </item>
@@ -17,7 +17,11 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <solid android:color="#E53935" />
+                <gradient
+        android:angle="0"
+        android:startColor="@color/zeno_gold"
+        android:endColor="@color/zeno_cyan"
+        android:type="linear" />
                 <corners android:radius="3dp" />
             </shape>
         </clip>

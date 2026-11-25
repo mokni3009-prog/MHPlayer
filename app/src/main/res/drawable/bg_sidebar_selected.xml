@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Dark-red tint behind the selected sidebar item (left bar is a separate View). -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="#2A0A0C" />
+    <gradient
+        android:angle="0"
+        android:startColor="@color/zeno_selected_bg"
+        android:endColor="@color/zeno_selected_bg_end"
+        android:type="linear" />
+    <corners android:radius="12dp" />
 </shape>

@@ -13,6 +13,15 @@
     <dimen name="sidebar_item_icon">20dp</dimen>
     <dimen name="sidebar_item_gap">8dp</dimen>
     <dimen name="sidebar_item_icon_margin">12dp</dimen>
+    <!-- v1.6 Zeno additions -->
+    <dimen name="sidebar_logo_image">44dp</dimen>
+    <dimen name="banner_height">300dp</dimen>
+    <dimen name="banner_radius">20dp</dimen>
+    <dimen name="fav_poster_height">180dp</dimen>
+    <dimen name="fav_poster_width">120dp</dimen>
+    <dimen name="settings_row_height">64dp</dimen>
+    <dimen name="settings_icon_size">40dp</dimen>
+    <dimen name="account_avatar_size">72dp</dimen>
     <dimen name="sidebar_padding_left">16dp</dimen>
     <dimen name="sidebar_padding_right">8dp</dimen>
     <dimen name="sidebar_selected_bar_width">4dp</dimen>

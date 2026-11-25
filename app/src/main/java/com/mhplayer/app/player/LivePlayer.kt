@@ -82,6 +82,14 @@ interface LivePlayer {
      * libVLC's adaptive cap is fixed at LibVLC creation.
      */
     fun setQualityLock(maxHeight: Int)
+    /**
+     * Preferred audio language ("en", "fr", "ar", "es") or null = automatic.
+     * ExoPlayer selects the matching audio track; VLC matches the track
+     * name (best effort — libVLC does not expose a language tag).
+     */
+    fun setPreferredAudioLanguage(language: String?)
+    /** Show subtitles when the stream has them (default off). */
+    fun setSubtitlesEnabled(enabled: Boolean)
     fun setVolume(volume: Float) // 0..1 (VLC internally allows 200% — clamp UI to 100%)
     fun release()
 }

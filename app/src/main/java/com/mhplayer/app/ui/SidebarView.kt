@@ -11,16 +11,15 @@ import androidx.core.content.ContextCompat
 import com.mhplayer.app.R
 
 /**
- * Reusable narrow sidebar (DESIGN_TOKENS.md §1.4).
- *
- * Logo + menu Accueil / Chaînes / Films / Séries, with "Ma playlist"
- * pinned at the bottom. Selected item: red icon + red bold text, dark-red
- * tinted row background and a 4dp solid red bar on the left edge.
- * Every item is focusable with a visible red focus highlight (DPAD + touch).
+ * Zeno Play sidebar (v1.6) — FIXED and identical on every screen, exactly
+ * as in the approved Home image: the Z logo + "Zeno Play" in gold, then
+ * Home / Live TV / Movies / Series / Favorites / Settings, with Account
+ * pinned at the bottom. Only the active section changes: the selected row
+ * gets the slate gradient pill background, a gold icon and white bold text;
+ * unselected rows are transparent with muted icons and secondary text.
+ * Every item is focusable with a visible gold focus highlight (DPAD + touch).
  * In portrait the fragment calls [setHorizontal] and the sidebar becomes a
  * top bar with the same items laid out horizontally.
- *
- * "Films" appears exactly once (the movies mockup duplicated it — not reproduced).
  */
 class SidebarView @JvmOverloads constructor(
     context: Context,
@@ -33,7 +32,9 @@ class SidebarView @JvmOverloads constructor(
         CHANNELS(R.string.sidebar_channels, R.drawable.ic_tv),
         MOVIES(R.string.sidebar_movies, R.drawable.ic_clapperboard),
         SERIES(R.string.sidebar_series, R.drawable.ic_grid),
-        PLAYLIST(R.string.sidebar_playlist, R.drawable.ic_bookmark),
+        FAVORITES(R.string.sidebar_favorites, R.drawable.ic_favorite),
+        SETTINGS(R.string.sidebar_settings, R.drawable.ic_settings),
+        ACCOUNT(R.string.sidebar_account, R.drawable.ic_user),
     }
 
     var onItemSelected: ((Item) -> Unit)? = null
@@ -46,12 +47,14 @@ class SidebarView @JvmOverloads constructor(
     init {
         orientation = VERTICAL
         LayoutInflater.from(context).inflate(R.layout.view_sidebar, this, true)
-        setBackgroundColor(ContextCompat.getColor(context, R.color.color_sidebar_bg))
+        setBackgroundResource(R.drawable.bg_sidebar_panel)
         bindItem(Item.HOME, R.id.itemHome)
         bindItem(Item.CHANNELS, R.id.itemChannels)
         bindItem(Item.MOVIES, R.id.itemMovies)
         bindItem(Item.SERIES, R.id.itemSeries)
-        bindItem(Item.PLAYLIST, R.id.itemPlaylist)
+        bindItem(Item.FAVORITES, R.id.itemFavorites)
+        bindItem(Item.SETTINGS, R.id.itemSettings)
+        bindItem(Item.ACCOUNT, R.id.itemAccount)
         refresh()
     }
 
@@ -74,7 +77,7 @@ class SidebarView @JvmOverloads constructor(
         itemViews[item] = row
     }
 
-    /** Marks [item] selected (red text/icon + tint + left bar). */
+    /** Marks [item] selected (slate pill + gold icon + white text). */
     fun select(item: Item, notify: Boolean = false) {
         selectedItem = item
         refresh()
@@ -83,13 +86,12 @@ class SidebarView @JvmOverloads constructor(
 
     fun setSelected(item: Item) = select(item, notify = false)
 
-    /** Floating rounded panel (Home) vs edge-to-edge panel (other screens). */
-    fun setFloating(floating: Boolean) {
-        if (floating) {
-            setBackgroundResource(R.drawable.bg_sidebar_panel)
-        } else {
-            setBackgroundColor(ContextCompat.getColor(context, R.color.color_sidebar_bg))
-        }
+    /**
+     * The sidebar is a floating rounded panel on EVERY screen (the fixed
+     * sidebar rule) — the parameter is kept for compatibility and ignored.
+     */
+    fun setFloating(@Suppress("UNUSED_PARAMETER") floating: Boolean) {
+        setBackgroundResource(R.drawable.bg_sidebar_panel)
     }
 
     /** Portrait: the sidebar becomes a horizontal top bar. */
@@ -120,18 +122,19 @@ class SidebarView @JvmOverloads constructor(
             val selected = item == selectedItem
             val icon = row.findViewById<ImageView>(R.id.sidebarItemIcon)
             val label = row.findViewById<TextView>(R.id.sidebarItemLabel)
-            val bar = row.findViewById<View>(R.id.sidebarItemBar)
-            bar.visibility = if (selected) View.VISIBLE else View.INVISIBLE
             row.setBackgroundResource(
                 if (selected) R.drawable.bg_sidebar_selected else 0,
             )
-            val color = ContextCompat.getColor(
+            val iconColor = ContextCompat.getColor(
                 context,
-                if (selected) R.color.color_primary_red else R.color.color_text_secondary,
+                if (selected) R.color.zeno_gold else R.color.zeno_text_muted,
             )
-            icon.setColorFilter(color)
-            label.setTextColor(color)
-            label.typeface = if (selected) android.graphics.Typeface.DEFAULT_BOLD else android.graphics.Typeface.DEFAULT
+            val labelColor = ContextCompat.getColor(
+                context,
+                if (selected) R.color.zeno_text_primary else R.color.zeno_text_secondary,
+            )
+            icon.setColorFilter(iconColor)
+            label.setTextColor(labelColor)
         }
     }
 }

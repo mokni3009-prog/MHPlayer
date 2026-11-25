@@ -12,6 +12,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.Update
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.mhplayer.app.data.model.Category
 import com.mhplayer.app.data.model.Episode
 import com.mhplayer.app.data.model.LiveChannel
@@ -98,6 +100,20 @@ data class ChannelPlaybackEntity(
     val hwDecoder: String,
     val lastError: String?,
     val lastSuccessAt: Long,
+)
+
+/**
+ * Favorites (v1.6): the user taps the heart on a channel, movie or series.
+ * [id] is "live:<streamId>" / "vod:<streamId>" / "series:<seriesId>" so
+ * the three kinds never collide. The item itself stays in its own table;
+ * this table only remembers the choice.
+ */
+@Entity(tableName = "favorites")
+data class FavoriteEntity(
+    @PrimaryKey val id: String,
+    val type: String,
+    val itemId: Int,
+    val addedAt: Long,
 )
 
 // ---------------------------------------------------------------------------
@@ -367,6 +383,27 @@ interface ChannelPlaybackDao {
     suspend fun clearAll()
 }
 
+@Dao
+interface FavoriteDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(entity: FavoriteEntity)
+
+    @Query("DELETE FROM favorites WHERE id = :id")
+    suspend fun deleteById(id: String)
+
+    @Query("SELECT * FROM favorites ORDER BY addedAt DESC")
+    suspend fun getAll(): List<FavoriteEntity>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM favorites WHERE id = :id)")
+    suspend fun exists(id: String): Boolean
+
+    @Query("SELECT COUNT(*) FROM favorites")
+    suspend fun countAll(): Int
+
+    @Query("DELETE FROM favorites")
+    suspend fun clearAll()
+}
+
 // ---------------------------------------------------------------------------
 // Database
 // ---------------------------------------------------------------------------
@@ -379,8 +416,9 @@ interface ChannelPlaybackDao {
         SeriesEntity::class,
         EpisodeEntity::class,
         ChannelPlaybackEntity::class,
+        FavoriteEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -391,9 +429,22 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun seriesDao(): SeriesDao
     abstract fun episodeDao(): EpisodeDao
     abstract fun channelPlaybackDao(): ChannelPlaybackDao
+    abstract fun favoriteDao(): FavoriteDao
 
     companion object {
         const val DATABASE_NAME = "mhplayer.db"
+
+        /** v1 -> v2 (v1.6): adds the favorites table. No data is wiped. */
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `favorites` (" +
+                        "`id` TEXT NOT NULL, `type` TEXT NOT NULL, " +
+                        "`itemId` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, " +
+                        "PRIMARY KEY(`id`))",
+                )
+            }
+        }
 
         @Volatile
         private var instance: AppDatabase? = null
@@ -405,6 +456,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DATABASE_NAME,
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { instance = it }

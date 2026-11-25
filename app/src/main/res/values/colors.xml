@@ -1,45 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Design tokens — DESIGN_TOKENS.md (measured from the 9 approved mockups). -->
+<!-- Zeno Play identity (v1.6): colours sampled from the approved reference
+     images (icon / home / login / live-tv). Dark navy background, gold ->
+     cyan gradient, white bold text. -->
 <resources>
-    <color name="color_background">#0A0A0C</color>
-    <color name="color_background_alt">#060A0D</color>
-    <color name="color_sidebar_bg">#121116</color>
-    <color name="color_card_bg">#161618</color>
-    <color name="color_card_bg_2">#171719</color>
-    <color name="color_panel_dark">#0C0B10</color>
-    <color name="color_panel_mid">#222128</color>
-    <color name="color_panel_video">#0E0D12</color>
-    <color name="color_input_bg">#29282B</color>
-    <color name="color_input_border">#55565A</color>
-    <color name="color_chip_inactive_bg">#26272B</color>
-    <color name="color_tab_inactive">#444444</color>
-    <color name="color_button_secondary_bg">#212025</color>
-    <color name="color_button_secondary_border">#55565A</color>
-    <color name="color_progress_track">#333333</color>
-    <color name="color_seek_track">#30312C</color>
-    <color name="color_text_primary">#FFFFFF</color>
-    <color name="color_text_secondary">#B0B0B5</color>
-    <color name="color_text_muted">#8A8A8E</color>
-    <color name="color_text_disabled">#6B6B70</color>
-    <color name="color_success_green">#31B561</color>
-    <color name="color_icon_muted">#8E8E93</color>
-    <color name="color_primary_red">#CC2226</color>
-    <color name="color_progress_fill">#E53935</color>
-    <color name="color_selected_row_bg">#2A0A0C</color>
-    <color name="color_logo_play">#D32C2E</color>
-    <color name="color_divider">#1E1E22</color>
-    <color name="color_focus_bg">#1E1E22</color>
-    <color name="color_scrim">#88000000</color>
+    <!-- Core identity -->
+    <color name="zeno_bg">#0C1426</color>
+    <color name="zeno_bg_deep">#030E2C</color>
+    <color name="zeno_panel">#121B31</color>
+    <color name="zeno_panel_border">#1E2A47</color>
+    <color name="zeno_card">#141E33</color>
+    <color name="zeno_card_border">#22304E</color>
+    <color name="zeno_gold">#E0C066</color>
+    <color name="zeno_gold_light">#F5D98A</color>
+    <color name="zeno_cyan">#4EC8D2</color>
+    <color name="zeno_cyan_light">#7FDDE8</color>
 
-    <!-- Modern redesign (v1.4): login / loading / update dialog. -->
-    <color name="color_red_gradient_start">#F04438</color>
-    <color name="color_red_gradient_end">#A81E22</color>
-    <color name="color_card_modern">#141416</color>
-    <color name="color_card_border">#2A2A30</color>
-    <color name="color_input_modern_bg">#1E1E22</color>
-    <color name="color_input_modern_border">#34343A</color>
-    <color name="color_glow_top">#33100F</color>
-    <color name="color_track">#26262B</color>
-    <color name="color_badge_bg">#3A1214</color>
+    <!-- Text -->
+    <color name="zeno_text_primary">#FFFFFF</color>
+    <color name="zeno_text_secondary">#C3CADB</color>
+    <color name="zeno_text_muted">#8B94A9</color>
+    <color name="zeno_text_on_gradient">#1A1405</color>
 
+    <!-- Inputs / selection -->
+    <color name="zeno_input_bg">#1A2438</color>
+    <color name="zeno_input_border">#2A3852</color>
+    <color name="zeno_selected_bg">#1E2A47</color>
+    <color name="zeno_selected_bg_end">#26375C</color>
+
+    <!-- Badges / overlays -->
+    <color name="zeno_live_badge">#E5484D</color>
+    <color name="zeno_scrim">#B3000000</color>
+    <color name="zeno_scrim_light">#66000000</color>
+    <color name="zeno_track">#22304E</color>
+
+    <!-- Theme semantic colours -->
+    <color name="colorPrimary">@color/zeno_gold</color>
+    <color name="colorPrimaryDark">@color/zeno_bg_deep</color>
+    <color name="colorAccent">@color/zeno_cyan</color>
+    <color name="color_background">@color/zeno_bg</color>
+    <color name="color_surface">@color/zeno_panel</color>
+    <color name="color_text_primary">@color/zeno_text_primary</color>
+    <color name="color_text_secondary">@color/zeno_text_secondary</color>
+    <color name="color_text_hint">@color/zeno_text_muted</color>
+
+    <!-- Legacy aliases (v1.5 names) — mapped onto the Zeno palette so any
+         old drawable still referencing them keeps the new identity. Do not
+         use these names in new code. -->
+    <color name="color_primary_red">@color/zeno_gold</color>
+    <color name="color_red_gradient_start">@color/zeno_gold</color>
+    <color name="color_red_gradient_end">@color/zeno_cyan</color>
+    <color name="color_dark_background">@color/zeno_bg</color>
+    <color name="color_sidebar_background">@color/zeno_panel</color>
+    <color name="color_surface_dark">@color/zeno_card</color>
+    <color name="color_card_modern">@color/zeno_card</color>
+    <color name="color_card_border">@color/zeno_card_border</color>
+    <color name="color_input_modern_bg">@color/zeno_input_bg</color>
+    <color name="color_input_modern_border">@color/zeno_input_border</color>
+    <color name="color_track">@color/zeno_track</color>
+    <color name="color_tab_inactive">@color/zeno_text_muted</color>
+    <color name="color_sidebar_text">@color/zeno_text_secondary</color>
+    <color name="color_sidebar_text_inactive">@color/zeno_text_muted</color>
+    <color name="color_sidebar_icon">@color/zeno_text_muted</color>
+    <color name="color_background_alt">@color/zeno_bg_deep</color>
+    <color name="color_card_bg">@color/zeno_card</color>
+    <color name="color_focus_bg">@color/zeno_selected_bg</color>
+    <color name="color_panel_dark">@color/zeno_panel</color>
+    <color name="color_panel_mid">@color/zeno_card</color>
+    <color name="color_panel_video">@color/zeno_bg_deep</color>
+    <color name="color_success_green">#3FBF7A</color>
+    <color name="color_text_disabled">@color/zeno_text_muted</color>
+    <color name="color_text_muted">@color/zeno_text_muted</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_black">#000000</color>
 </resources>

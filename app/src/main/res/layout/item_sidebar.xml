@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One sidebar menu row: 4dp red left bar + icon + label. -->
+<!-- One sidebar menu row (v1.6): icon + bold label. The selected row gets the
+     slate gradient pill background (@drawable/bg_sidebar_selected) and a gold
+     icon; unselected rows are transparent with muted icons. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/sidebar_item_height"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingStart="0dp"
-    android:paddingEnd="@dimen/sidebar_padding_right"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
     android:focusable="true"
     android:clickable="true">
-
-    <View
-        android:id="@+id/sidebarItemBar"
-        android:layout_width="4dp"
-        android:layout_height="match_parent"
-        android:background="@color/color_primary_red"
-        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/sidebarItemIcon"
         android:layout_width="@dimen/sidebar_item_icon"
         android:layout_height="@dimen/sidebar_item_icon"
-        android:layout_marginStart="@dimen/sidebar_item_icon_margin"
         android:contentDescription="@null" />
 
     <TextView
@@ -30,6 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/sidebar_item_gap"
         android:textSize="@dimen/text_sidebar_label"
-        android:textColor="@color/color_text_secondary" />
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins"
+        android:textColor="@color/zeno_text_secondary" />
 
 </LinearLayout>

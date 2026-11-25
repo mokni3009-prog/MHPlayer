@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Login background (v1.4 redesign): deep dark base with a soft red glow
-     at the top, like a spotlight over the logo. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/color_background" />
+            <solid android:color="@color/zeno_bg" />
         </shape>
     </item>
     <item>
@@ -14,7 +12,7 @@
                 android:gradientRadius="420dp"
                 android:centerX="0.5"
                 android:centerY="0.0"
-                android:startColor="@color/color_glow_top"
+                android:startColor="#2BE0C066"
                 android:endColor="#00000000" />
         </shape>
     </item>

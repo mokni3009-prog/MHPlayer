@@ -22,11 +22,12 @@ import com.mhplayer.app.ui.adapters.EpisodeAdapter
 import kotlinx.coroutines.launch
 
 /**
- * Details: sidebar (Séries active for series), large poster, title, meta
- * line ("2024 • Drame • 2 saisons"), description, red "Lecture" + grey
- * "Plus d'infos", "Saison 1" row with episode cards (Épisode 1 selected
- * red). Movies: same layout without episodes. HbbTV-flagged channels show
- * "HbbTV interactif non disponible sur cet appareil".
+ * Details: sidebar (Series active for series), large poster, title, meta
+ * line ("2024 • Drama • 2 seasons"), description, gold "Play" + grey
+ * "More info", "Season 1" row with episode cards (Episode 1 selected
+ * gold). Movies: same layout without episodes. HbbTV-flagged channels show
+ * "Interactive HbbTV is not available on this device". A gold heart adds
+ * the item to Favorites.
  */
 class DetailsFragment : Fragment() {
 
@@ -85,7 +86,9 @@ class DetailsFragment : Fragment() {
                 SidebarView.Item.CHANNELS -> activity.navigateTo(MainActivity.Destination.CHANNELS)
                 SidebarView.Item.MOVIES -> activity.navigateTo(MainActivity.Destination.MOVIES)
                 SidebarView.Item.SERIES -> activity.navigateTo(MainActivity.Destination.SERIES)
-                SidebarView.Item.PLAYLIST -> activity.navigateTo(MainActivity.Destination.PLAYLIST)
+                SidebarView.Item.FAVORITES -> activity.navigateTo(MainActivity.Destination.FAVORITES)
+                SidebarView.Item.SETTINGS -> activity.navigateTo(MainActivity.Destination.SETTINGS)
+                SidebarView.Item.ACCOUNT -> activity.navigateTo(MainActivity.Destination.ACCOUNT)
             }
         }
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -93,7 +96,7 @@ class DetailsFragment : Fragment() {
         }
 
         binding.detailsTitle.text = title
-        binding.detailsPlot.text = plot.ifBlank { "Aucune description disponible." }
+        binding.detailsPlot.text = plot.ifBlank { "No description available." }
         binding.detailsPlot.maxLines = 2
         binding.detailsPoster.load(cover) {
             placeholder(R.drawable.poster_placeholder)
@@ -110,18 +113,20 @@ class DetailsFragment : Fragment() {
             plotExpanded = !plotExpanded
             binding.detailsPlot.maxLines = if (plotExpanded) Int.MAX_VALUE else 2
         }
+        binding.favoriteButton.setOnClickListener { toggleFavorite() }
+        refreshFavoriteIcon()
 
         when (kind) {
             "series" -> {
                 binding.detailsMeta.text = buildString {
                     if (year > 0) append(year)
                     if (genre.isNotBlank()) append(if (isNotEmpty()) " • " else "").append(genre)
-                    if (seasonCount > 0) append(if (isNotEmpty()) " • " else "").append("$seasonCount saisons")
+                    if (seasonCount > 0) append(if (isNotEmpty()) " • " else "").append("$seasonCount seasons")
                 }.ifBlank { "—" }
                 loadSeasons()
             }
             "live" -> {
-                binding.detailsMeta.text = "EN DIRECT"
+                binding.detailsMeta.text = "LIVE"
                 binding.seasonTitle.visibility = View.GONE
                 binding.episodeList.visibility = View.GONE
             }
@@ -151,15 +156,52 @@ class DetailsFragment : Fragment() {
             binding.detailsMeta.text = buildString {
                 if (year > 0) append(year)
                 if (genre.isNotBlank()) append(if (isNotEmpty()) " • " else "").append(genre)
-                append(if (isNotEmpty()) " • " else "").append("$seasonCount saisons")
+                append(if (isNotEmpty()) " • " else "").append("$seasonCount seasons")
             }
-            binding.seasonTitle.text = "Saison ${firstSeason.seasonNumber}"
+            binding.seasonTitle.text = "Season ${firstSeason.seasonNumber}"
             val adapter = EpisodeAdapter(firstSeason.episodes, coverUrl = cover) { episode ->
                 playEpisode(episode)
             }
             binding.episodeList.adapter = adapter
             firstEpisode = firstSeason.episodes.firstOrNull()
             firstEpisode?.let { adapter.selectedEpisodeId = it.id }
+        }
+    }
+
+    /** Gold heart when this item is a favorite, muted otherwise. */
+    private fun refreshFavoriteIcon() {
+        val type = when (kind) {
+            "series" -> "series"
+            "live" -> "live"
+            else -> "vod"
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val isFav = requireContext().app().repository.isFavorite(type, itemId)
+            if (!isAdded) return@launch
+            binding.favoriteButton.setColorFilter(
+                androidx.core.content.ContextCompat.getColor(
+                    requireContext(),
+                    if (isFav) R.color.zeno_gold else R.color.zeno_text_muted,
+                ),
+            )
+        }
+    }
+
+    private fun toggleFavorite() {
+        val type = when (kind) {
+            "series" -> "series"
+            "live" -> "live"
+            else -> "vod"
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val added = requireContext().app().repository.toggleFavorite(type, itemId)
+            if (!isAdded) return@launch
+            refreshFavoriteIcon()
+            android.widget.Toast.makeText(
+                requireContext(),
+                if (added) R.string.vod_added_favorite else R.string.vod_removed_favorite,
+                android.widget.Toast.LENGTH_SHORT,
+            ).show()
         }
     }
 

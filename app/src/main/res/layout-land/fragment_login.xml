@@ -1,273 +1,322 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Login — responsive (v1.3): the card is 0dp wide inside a ConstraintLayout
-     with 24dp side margins and a 530dp max width, so it never clips on narrow
-     phones; vertical sizes come from the screen-size dimens buckets. The
-     ScrollView keeps the whole form reachable (incl. with the keyboard open). -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<!-- Zeno Play login (approved reference): Z logo + "Zeno Play" + tagline,
+     4 fields (Xtream Codes URL / Username / Password with eye /
+     Playlist Name (Optional)), "Save Account Information" switch, gold->cyan
+     "Sign In" button, "Forgot Password?" / "Add User" links and the
+     "Need an Xtream Code?" line. The Xtream / M3U tabs are kept (v1.5
+     functionality) — the reference image shows Xtream only, the M3U tab
+     stays as the second tab. ScrollView keeps the form reachable with the
+     keyboard open on short phone screens. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_background_alt">
+    android:background="@drawable/bg_login_gradient"
+    android:fillViewport="true">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="90dp"
+            android:src="@drawable/logo_zeno"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/app_name"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_gold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/app_tagline"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_secondary" />
+
+        <LinearLayout
+            android:id="@+id/tabContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_tab_container"
+            android:padding="4dp">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/tabXtream"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:paddingStart="@dimen/login_card_padding_side"
-                android:paddingEnd="@dimen/login_card_padding_side"
-                android:paddingTop="@dimen/login_card_padding_top"
-                android:paddingBottom="@dimen/login_card_padding_bottom"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintWidth_max="@dimen/login_card_width"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="@dimen/logo_icon"
-                        android:layout_height="@dimen/logo_icon"
-                        android:src="@drawable/logo_play"
-                        android:contentDescription="@null" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/logo_text_margin"
-                        android:text="MH Player"
-                        android:textSize="@dimen/text_logo"
-                        android:textStyle="bold"
-                        android:textColor="@color/color_text_primary" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/tab_height"
-                    android:layout_marginTop="@dimen/form_margin_top"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:id="@+id/tabXtream"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:focusable="true"
-                        android:clickable="true">
-
-                        <TextView
-                            android:id="@+id/tabXtreamLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Xtream Codes"
-                            android:textSize="@dimen/text_tab"
-                            android:textStyle="bold"
-                            android:textColor="@color/color_text_primary" />
-
-                        <View
-                            android:id="@+id/tabXtreamUnderline"
-                            android:layout_width="@dimen/tab_underline_width"
-                            android:layout_height="3dp"
-                            android:layout_marginTop="6dp"
-                            android:background="@color/color_primary_red" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/tabM3u"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:background="@color/color_tab_inactive"
-                        android:focusable="true"
-                        android:clickable="true">
-
-                        <TextView
-                            android:id="@+id/tabM3uLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Playlist M3U"
-                            android:textSize="@dimen/text_tab"
-                            android:textColor="@color/color_text_muted" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- Xtream Codes form -->
-                <LinearLayout
-                    android:id="@+id/formXtream"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="@dimen/form_margin_top">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Serveur (URL)"
-                        android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
-
-                    <EditText
-                        android:id="@+id/inputServer"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/input_height"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:hint="https://serveur.example.com"
-                        android:inputType="textUri"
-                        style="@style/Widget.MHPlayer.Input" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:text="Nom d'utilisateur"
-                        android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
-
-                    <EditText
-                        android:id="@+id/inputUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/input_height"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:hint="ex: utilisateur123"
-                        android:inputType="text"
-                        style="@style/Widget.MHPlayer.Input" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:text="Mot de passe"
-                        android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
-
-                    <EditText
-                        android:id="@+id/inputPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/input_height"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:hint="••••••••••"
-                        android:inputType="textPassword"
-                        style="@style/Widget.MHPlayer.Input" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:text="Nom de la playlist"
-                        android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
-
-                    <EditText
-                        android:id="@+id/inputPlaylistName"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/input_height"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:hint="ex: Ma playlist"
-                        android:inputType="text"
-                        style="@style/Widget.MHPlayer.Input" />
-                </LinearLayout>
-
-                <!-- Playlist M3U form -->
-                <LinearLayout
-                    android:id="@+id/formM3u"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="@dimen/form_margin_top"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="URL de la playlist"
-                        android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
-
-                    <EditText
-                        android:id="@+id/inputM3uUrl"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/input_height"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:hint="https://serveur.example.com/playlist.m3u"
-                        android:inputType="textUri"
-                        style="@style/Widget.MHPlayer.Input" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:text="Nom de la playlist"
-                        android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
-
-                    <EditText
-                        android:id="@+id/inputM3uPlaylistName"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/input_height"
-                        android:layout_marginTop="@dimen/form_gap"
-                        android:hint="ex: Ma playlist"
-                        android:inputType="text"
-                        style="@style/Widget.MHPlayer.Input" />
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/loginButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_primary_height"
-                    android:layout_marginTop="@dimen/form_margin_top"
-                    android:text="Se connecter"
-                    style="@style/Widget.MHPlayer.Button.Primary" />
-
-                <ProgressBar
-                    android:id="@+id/loginProgress"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/form_gap"
-                    android:visibility="gone" />
+                android:orientation="horizontal"
+                android:background="@drawable/bg_tab_pill_active"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:focusable="true"
+                android:clickable="true">
 
                 <TextView
-                    android:id="@+id/errorText"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tabXtreamLabel"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/form_gap"
-                    android:gravity="center"
-                    android:textSize="@dimen/text_error"
-                    android:textColor="@color/color_primary_red"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/loginFooter"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/form_gap"
-                    android:gravity="center"
-                    android:text="Connexion Xtream Codes"
-                    android:textSize="@dimen/text_footer"
-                    android:textColor="@color/color_text_muted" />
+                    android:text="@string/login_tab_xtream"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/zeno_text_on_gradient" />
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-</FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/tabM3u"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_tab_pill_inactive"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:focusable="true"
+                android:clickable="true">
+
+                <TextView
+                    android:id="@+id/tabM3uLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_tab_m3u"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/zeno_text_muted" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Xtream form -->
+        <LinearLayout
+            android:id="@+id/formXtream"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/inputServer"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:hint="@string/login_url_hint"
+                android:inputType="textUri"
+                android:maxLines="1"
+                style="@style/Widget.Zeno.Input" />
+
+            <EditText
+                android:id="@+id/inputUsername"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/form_gap"
+                android:hint="@string/login_username_hint"
+                android:inputType="text"
+                android:maxLines="1"
+                style="@style/Widget.Zeno.Input" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/form_gap">
+
+                <EditText
+                    android:id="@+id/inputPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/login_password_hint"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingEnd="48dp"
+                    style="@style/Widget.Zeno.Input" />
+
+                <ImageView
+                    android:id="@+id/passwordToggle"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="14dp"
+                    android:src="@drawable/ic_visibility"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+
+            <EditText
+                android:id="@+id/inputPlaylistName"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/form_gap"
+                android:hint="@string/login_playlist_hint"
+                android:inputType="text"
+                android:maxLines="1"
+                style="@style/Widget.Zeno.Input" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <Switch
+                    android:id="@+id/saveSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    style="@style/Widget.Zeno.Switch" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/login_save_account"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/zeno_text_secondary" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_primary_height"
+                android:layout_marginTop="18dp"
+                android:text="@string/login_sign_in"
+                style="@style/Widget.Zeno.Button.Primary" />
+
+            <ProgressBar
+                android:id="@+id/loginProgress"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- M3U form -->
+        <LinearLayout
+            android:id="@+id/formM3u"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/inputM3uUrl"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:hint="@string/login_m3u_url_hint"
+                android:inputType="textUri"
+                android:maxLines="1"
+                style="@style/Widget.Zeno.Input" />
+
+            <EditText
+                android:id="@+id/inputM3uPlaylistName"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/form_gap"
+                android:hint="@string/login_playlist_hint"
+                android:inputType="text"
+                android:maxLines="1"
+                style="@style/Widget.Zeno.Input" />
+
+            <Button
+                android:id="@+id/m3uLoginButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_primary_height"
+                android:layout_marginTop="18dp"
+                android:text="@string/login_sign_in"
+                style="@style/Widget.Zeno.Button.Primary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/errorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="@string/login_error_invalid"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="#FF6B6B"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/loginFooter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Xtream Codes"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_muted" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/forgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_forgot"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_gold"
+                android:focusable="true"
+                android:clickable="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="•"
+                android:textSize="13sp"
+                android:textColor="@color/zeno_text_muted" />
+
+            <TextView
+                android:id="@+id/addUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/login_add_user"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppins"
+                android:textColor="@color/zeno_gold"
+                android:focusable="true"
+                android:clickable="true" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/needCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/login_need_code"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/zeno_text_muted" />
+
+    </LinearLayout>
+</ScrollView>

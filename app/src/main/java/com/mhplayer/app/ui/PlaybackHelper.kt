@@ -65,7 +65,7 @@ object PlaybackHelper {
     }
 
     fun episodeTitle(episode: Episode): String =
-        if (episode.title.isBlank()) "Épisode ${episode.episodeNum}" else episode.title
+        if (episode.title.isBlank()) "Episode ${episode.episodeNum}" else episode.title
 
     fun vodDetailsArgs(vod: VodItem): Bundle = Bundle().apply {
         putString(ARG_DETAILS_KIND, "vod")

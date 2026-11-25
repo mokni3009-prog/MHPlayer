@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * Commands the tester can send (payload is a JSON object):
  * - open_screen {screen}: login | loading | home | channels | movies |
- *   series | playlist (details/player need arguments -> error result).
+ *   series | favorites | settings | account (details/player need arguments -> error result).
  * - fill_field {field, text}: field = one of the whitelisted EditText ids.
  * - tap_button {button}: button = one of the whitelisted view ids.
  * - screenshot {}: returns a fresh screenshot in the result.
@@ -240,7 +240,9 @@ object RemoteTestMode {
                     "channels" -> activity.navigateTo(MainActivity.Destination.CHANNELS)
                     "movies" -> activity.navigateTo(MainActivity.Destination.MOVIES)
                     "series" -> activity.navigateTo(MainActivity.Destination.SERIES)
-                    "playlist" -> activity.navigateTo(MainActivity.Destination.PLAYLIST)
+                    "favorites" -> activity.navigateTo(MainActivity.Destination.FAVORITES)
+                    "settings" -> activity.navigateTo(MainActivity.Destination.SETTINGS)
+                    "account" -> activity.navigateTo(MainActivity.Destination.ACCOUNT)
                     "details", "player" -> return@withContext "error: screen '$screen' needs arguments"
                     else -> return@withContext "error: unknown screen '$screen'"
                 }

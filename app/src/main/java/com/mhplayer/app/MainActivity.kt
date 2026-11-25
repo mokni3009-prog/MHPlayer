@@ -7,15 +7,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import com.mhplayer.app.player.DualEnginePlayer
+import com.mhplayer.app.ui.AccountFragment
 import com.mhplayer.app.ui.ChannelsFragment
 import com.mhplayer.app.ui.DetailsFragment
+import com.mhplayer.app.ui.FavoritesFragment
 import com.mhplayer.app.ui.HomeFragment
 import com.mhplayer.app.ui.LoadingFragment
 import com.mhplayer.app.ui.LoginFragment
 import com.mhplayer.app.ui.MoviesFragment
 import com.mhplayer.app.ui.PlayerFragment
-import com.mhplayer.app.ui.PlaylistFragment
 import com.mhplayer.app.ui.SeriesFragment
+import com.mhplayer.app.ui.SettingsFragment
 import com.mhplayer.app.util.AppUpdater
 
 /**
@@ -30,7 +32,7 @@ import com.mhplayer.app.util.AppUpdater
  */
 class MainActivity : AppCompatActivity() {
 
-    enum class Destination { HOME, CHANNELS, MOVIES, SERIES, PLAYLIST }
+    enum class Destination { HOME, CHANNELS, MOVIES, SERIES, FAVORITES, SETTINGS, ACCOUNT }
 
     /** Shared dual-engine player for all playback fragments. */
     val player: DualEnginePlayer
@@ -87,7 +89,9 @@ class MainActivity : AppCompatActivity() {
             Destination.CHANNELS -> TAG_CHANNELS
             Destination.MOVIES -> TAG_MOVIES
             Destination.SERIES -> TAG_SERIES
-            Destination.PLAYLIST -> TAG_PLAYLIST
+            Destination.FAVORITES -> TAG_FAVORITES
+            Destination.SETTINGS -> TAG_SETTINGS
+            Destination.ACCOUNT -> TAG_ACCOUNT
         }
         if (current?.tag == targetTag) return
         // Leave any fullscreen player / details screen first.
@@ -97,7 +101,9 @@ class MainActivity : AppCompatActivity() {
             Destination.CHANNELS -> ChannelsFragment()
             Destination.MOVIES -> MoviesFragment()
             Destination.SERIES -> SeriesFragment()
-            Destination.PLAYLIST -> PlaylistFragment()
+            Destination.FAVORITES -> FavoritesFragment()
+            Destination.SETTINGS -> SettingsFragment()
+            Destination.ACCOUNT -> AccountFragment()
         }
         showFragment(fragment, targetTag, addToBackStack = false)
     }
@@ -164,7 +170,9 @@ class MainActivity : AppCompatActivity() {
         const val TAG_CHANNELS = "channels"
         const val TAG_MOVIES = "movies"
         const val TAG_SERIES = "series"
-        const val TAG_PLAYLIST = "playlist"
+        const val TAG_FAVORITES = "favorites"
+        const val TAG_SETTINGS = "settings"
+        const val TAG_ACCOUNT = "account"
         const val TAG_DETAILS = "details"
         const val TAG_PLAYER = "player"
     }

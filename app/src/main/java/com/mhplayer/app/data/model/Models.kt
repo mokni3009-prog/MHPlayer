@@ -448,3 +448,41 @@ data class SeriesInfoMetaDto(
     @Serializable(with = FlexibleDoubleSerializer::class)
     val rating: Double? = null,
 )
+
+/**
+ * One EPG program (v1.6): the current / next show on a live channel,
+ * from `get_short_epg&stream_id=...` on player_api.php. Times are Unix
+ * seconds as returned by the panel.
+ */
+data class EpgProgram(
+    val title: String,
+    /** Base64-encoded description from the panel (decoded when possible). */
+    val description: String,
+    val startTimestamp: Long,
+    val stopTimestamp: Long,
+)
+
+@Serializable
+data class EpgListingDto(
+    val epg_listings: List<EpgProgramDto> = emptyList(),
+)
+
+@Serializable
+data class EpgProgramDto(
+    val title: String = "",
+    val description: String = "",
+    val start_timestamp: String = "",
+    val stop_timestamp: String = "",
+) {
+    fun toModel(): EpgProgram {
+        val decoded = runCatching {
+            String(android.util.Base64.decode(description, android.util.Base64.DEFAULT))
+        }.getOrDefault(description)
+        return EpgProgram(
+            title = title,
+            description = decoded,
+            startTimestamp = start_timestamp.toLongOrNull() ?: 0L,
+            stopTimestamp = stop_timestamp.toLongOrNull() ?: 0L,
+        )
+    }
+}
