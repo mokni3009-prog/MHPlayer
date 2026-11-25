@@ -206,6 +206,10 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE type = :type ORDER BY name COLLATE NOCASE ASC")
     suspend fun getByType(type: String): List<CategoryEntity>
 
+    /** Row count, for the v1.5 fast-start cache check. */
+    @Query("SELECT COUNT(*) FROM categories")
+    suspend fun countAll(): Int
+
     @Query("DELETE FROM categories WHERE type = :type")
     suspend fun deleteByType(type: String)
 
@@ -229,6 +233,10 @@ interface LiveChannelDao {
 
     @Query("SELECT * FROM live_channels ORDER BY name COLLATE NOCASE ASC")
     suspend fun getAll(): List<LiveChannelEntity>
+
+    /** Row count, for the v1.5 fast-start cache check. */
+    @Query("SELECT COUNT(*) FROM live_channels")
+    suspend fun countAll(): Int
 
     @Query("DELETE FROM live_channels WHERE categoryId = :categoryId")
     suspend fun deleteByCategory(categoryId: String)
@@ -260,6 +268,10 @@ interface VodDao {
     @Query("SELECT * FROM vod ORDER BY name COLLATE NOCASE ASC")
     suspend fun getAll(): List<VodEntity>
 
+    /** Row count, for the v1.5 fast-start cache check. */
+    @Query("SELECT COUNT(*) FROM vod")
+    suspend fun countAll(): Int
+
     @Query("DELETE FROM vod WHERE categoryId = :categoryId")
     suspend fun deleteByCategory(categoryId: String)
 
@@ -289,6 +301,10 @@ interface SeriesDao {
 
     @Query("SELECT * FROM series ORDER BY name COLLATE NOCASE ASC")
     suspend fun getAll(): List<SeriesEntity>
+
+    /** Row count, for the v1.5 fast-start cache check. */
+    @Query("SELECT COUNT(*) FROM series")
+    suspend fun countAll(): Int
 
     @Query("DELETE FROM series WHERE categoryId = :categoryId")
     suspend fun deleteByCategory(categoryId: String)

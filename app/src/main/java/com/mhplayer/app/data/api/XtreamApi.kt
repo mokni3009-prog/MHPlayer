@@ -15,6 +15,8 @@ import com.mhplayer.app.data.model.VodStreamDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -51,6 +53,11 @@ class XtreamApiImpl(
     companion object {
         const val CONNECT_TIMEOUT_SECONDS = 5L
         const val READ_TIMEOUT_SECONDS = 10L
+
+        /** Longer read timeout for stream-list calls: one category can hold
+         *  thousands of items (multi-MB JSON) and 10 s is too short on a
+         *  slow mobile connection (v1.5 — incomplete lists). */
+        const val READ_TIMEOUT_STREAMS_SECONDS = 30L
         const val USER_AGENT = "MHPlayer/1.0 (Android)"
 
         fun defaultClient(): OkHttpClient = OkHttpClient.Builder()
@@ -69,6 +76,16 @@ class XtreamApiImpl(
     /** Credentials set by [authenticate] (or [setCredentials]); used by all other calls. */
     @Volatile
     private var credentials: Credentials? = null
+
+    /** Client with longer timeouts for stream-list calls (v1.5). It shares
+     *  the connection pool of the app client, so no extra connections. */
+    private val longClient: OkHttpClient by lazy {
+        client.newBuilder()
+            .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT_STREAMS_SECONDS, TimeUnit.SECONDS)
+            .writeTimeout(READ_TIMEOUT_STREAMS_SECONDS, TimeUnit.SECONDS)
+            .build()
+    }
 
     fun setCredentials(creds: Credentials) {
         credentials = creds
@@ -107,19 +124,31 @@ class XtreamApiImpl(
         getList<CategoryDto, Category>("get_live_categories")
 
     override suspend fun getLiveStreams(categoryId: String): List<LiveChannel> =
-        getList<LiveStreamDto, LiveChannel>("get_live_streams", mapOf("category_id" to categoryId))
+        getList<LiveStreamDto, LiveChannel>(
+            "get_live_streams",
+            mapOf("category_id" to categoryId),
+            longTimeout = true,
+        )
 
     override suspend fun getVodCategories(): List<Category> =
         getList<CategoryDto, Category>("get_vod_categories")
 
     override suspend fun getVodStreams(categoryId: String): List<VodItem> =
-        getList<VodStreamDto, VodItem>("get_vod_streams", mapOf("category_id" to categoryId))
+        getList<VodStreamDto, VodItem>(
+            "get_vod_streams",
+            mapOf("category_id" to categoryId),
+            longTimeout = true,
+        )
 
     override suspend fun getSeriesCategories(): List<Category> =
         getList<CategoryDto, Category>("get_series_categories")
 
     override suspend fun getSeries(categoryId: String): List<SeriesItem> =
-        getList<SeriesDto, SeriesItem>("get_series", mapOf("category_id" to categoryId))
+        getList<SeriesDto, SeriesItem>(
+            "get_series",
+            mapOf("category_id" to categoryId),
+            longTimeout = true,
+        )
 
     override suspend fun getSeriesInfo(seriesId: Int): List<Season> =
         withContext(Dispatchers.IO) {
@@ -138,14 +167,28 @@ class XtreamApiImpl(
      * Generic list endpoint: decodes the JSON array into DTOs and maps them
      * to domain models. [CategoryDto], [LiveStreamDto], [VodStreamDto] and
      * [SeriesDto] all expose `toModel()`.
+     *
+     * v1.5 — one malformed item must not kill the whole category: if the
+     * whole-array decode fails, decode element-by-element and skip the bad
+     * ones. A non-array body (e.g. a panel error object) yields an empty
+     * list instead of a crash, so the repository keeps its cached rows.
      */
     private suspend inline fun <reified D, M> getList(
         action: String,
         extraParams: Map<String, String> = emptyMap(),
+        longTimeout: Boolean = false,
     ): List<M> = withContext(Dispatchers.IO) {
-        val body = getRaw(action, extraParams)
+        val body = getRaw(action, extraParams, longTimeout)
         if (body.isBlank() || body.trim() == "null") return@withContext emptyList<M>()
-        val dtos = json.decodeFromString<List<D>>(body)
+        val dtos: List<D> = try {
+            json.decodeFromString<List<D>>(body)
+        } catch (_: Exception) {
+            val elements = runCatching { json.decodeFromString<List<JsonElement>>(body) }
+                .getOrDefault(emptyList())
+            elements.mapNotNull { element ->
+                runCatching { json.decodeFromJsonElement<D>(element) }.getOrNull()
+            }
+        }
         @Suppress("UNCHECKED_CAST")
         when (val first = dtos.firstOrNull()) {
             is CategoryDto -> (dtos as List<CategoryDto>).map { it.toModel() } as List<M>
@@ -161,6 +204,7 @@ class XtreamApiImpl(
     private suspend fun getRaw(
         action: String,
         extraParams: Map<String, String> = emptyMap(),
+        longTimeout: Boolean = false,
     ): String = withContext(Dispatchers.IO) {
         val creds = requireCredentials()
         val base = UrlBuilder.normalizeServerUrl(creds.serverUrl)
@@ -170,19 +214,21 @@ class XtreamApiImpl(
             .addQueryParameter("password", creds.password)
             .addQueryParameter("action", action)
         extraParams.forEach { (key, value) -> urlBuilder.addQueryParameter(key, value) }
-        execute(urlBuilder.build().toString())
+        execute(urlBuilder.build().toString(), longTimeout)
     }
 
     /** Executes a GET and returns the response body as a String. Never logs credentials. */
-    private fun execute(url: String): String {
+    private fun execute(url: String, longTimeout: Boolean = false): String {
         val request = Request.Builder()
             .url(url)
             .header("User-Agent", USER_AGENT)
             .get()
             .build()
-        val call = client.newCall(request)
+        val okClient = if (longTimeout) longClient else client
+        val call = okClient.newCall(request)
         // Per-call guard on top of the client-level timeouts.
-        call.timeout().timeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        val timeoutSeconds = if (longTimeout) READ_TIMEOUT_STREAMS_SECONDS else READ_TIMEOUT_SECONDS
+        call.timeout().timeout(timeoutSeconds, TimeUnit.SECONDS)
         call.execute().use { response ->
             if (!response.isSuccessful) {
                 throw IOException("Xtream API request failed with HTTP ${response.code}")

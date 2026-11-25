@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.mhplayer.app.player.DualEnginePlayer
 import com.mhplayer.app.ui.ChannelsFragment
 import com.mhplayer.app.ui.DetailsFragment
@@ -40,7 +42,20 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             val app = application as App
             if (app.sessionManager.hasCredentials() || app.sessionManager.getM3uUrl() != null) {
-                showFragment(LoadingFragment(), TAG_LOADING, addToBackStack = false)
+                // v1.5 fast start: the catalog lives in Room now. When a
+                // cached catalog exists, open Home immediately and refresh
+                // in the background — no more loading from Xtream on every
+                // launch. First run (empty cache) still goes to Loading.
+                lifecycleScope.launch {
+                    val hasCache = runCatching { app.repository.hasCachedCatalog() }
+                        .getOrDefault(false)
+                    if (hasCache) {
+                        openHome()
+                        app.repository.refreshInBackground()
+                    } else {
+                        showFragment(LoadingFragment(), TAG_LOADING, addToBackStack = false)
+                    }
+                }
             } else {
                 showFragment(LoginFragment(), TAG_LOGIN, addToBackStack = false)
             }

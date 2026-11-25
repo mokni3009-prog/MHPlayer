@@ -28,12 +28,33 @@ import androidx.media3.exoplayer.DefaultLoadControl
  * - One [DefaultAllocator] is shared across all inner rebuilds (passed via
  *   `DefaultLoadControl.Builder.setAllocator`), so buffer allocations keep a
  *   single pool even when the inner control is swapped mid-stream.
- * - When an inner instance is rebuilt mid-stream, the last
- *   [onTracksSelected] call is replayed on the new inner instance so it
- *   recomputes its target buffer size for the current period. Profile switches
- *   ([setLiveProfile]) are additionally only performed by [ExoLivePlayer] in
- *   `play()`, i.e. before `prepare()`, so the new inner also receives the
- *   player's own `onTracksSelected` for the new period.
+ * - When an inner instance is rebuilt mid-stream, the new instance is NOT
+ *   touched inside [rebuildInner] (v1.5 — see below). Instead the wrapper
+ *   lazily prepares it on the player's playback thread the first time the
+ *   player calls the wrapper afterwards ([ensurePreparedLocked]), replaying
+ *   the last [onTracksSelected] call then, so it recomputes its target
+ *   buffer size for the current period. Profile switches ([setLiveProfile])
+ *   are additionally only performed by [ExoLivePlayer] in `play()`, i.e.
+ *   before `prepare()`, so the new inner also receives the player's own
+ *   `onTracksSelected` for the new period.
+ * - v1.5 CRASH FIX (D1 id 9, NPE in DefaultLoadControl.onTracksSelected):
+ *   a fresh DefaultLoadControl only accepts onTracksSelected /
+ *   shouldContinueLoading for a playerId AFTER onPrepared(playerId) was
+ *   called on THAT instance — its internal loadingStates map is filled by
+ *   onPrepared, and onTracksSelected does
+ *   checkNotNull(loadingStates.get(playerId)) (Media3 1.11.1,
+ *   DefaultLoadControl.java:730). The old rebuildInner() replayed the
+ *   stored selections on the fresh inner without onPrepared -> NPE on the
+ *   first stall. It must also NOT call onPrepared from the listener thread
+ *   (main): onPrepared pins the inner to the calling thread, and the
+ *   player's next prepare() (playback thread) would then fail
+ *   DefaultLoadControl's thread check. Hence the lazy prepare above,
+ *   always on the playback thread, atomic with the forwarded call under
+ *   [lock] (a stall on the main thread must not interleave with a
+ *   shouldContinueLoading on the playback thread).
+ * - Defense in depth: every call into the inner LoadControl is wrapped in
+ *   try/catch — a load-control error degrades to default buffering, it
+ *   never crashes the app.
  * - Decay is evaluated lazily inside [shouldContinueLoading] /
  *   [shouldStartPlayback] (called frequently by the player), so no extra
  *   coroutine/timer is needed.
@@ -83,6 +104,22 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
 
     private var lastTracksSelected: Triple<LoadControl.Parameters, TrackGroupArray, Array<ExoTrackSelection?>>? = null
 
+    /**
+     * PlayerIds the player has prepared on this wrapper (added in
+     * [onPrepared], removed in [onStopped]/[onReleased]). A fresh inner
+     * instance is only auto-prepared for a playerId in this set — never for
+     * a player the player has not prepared (or has already released).
+     * Guarded by [lock].
+     */
+    private val seenPlayerIds = mutableSetOf<PlayerId>()
+
+    /**
+     * PlayerIds already onPrepared on the CURRENT inner instance. Cleared on
+     * every rebuild; repopulated lazily by [ensurePreparedLocked] on the
+     * playback thread. Guarded by [lock].
+     */
+    private val preparedOnCurrentInner = mutableSetOf<PlayerId>()
+
     /** Current minimum buffer in ms (base profile + stall steps, capped). */
     val minBufferMs: Int
         get() {
@@ -101,7 +138,12 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
     fun setLiveProfile(live: Boolean) {
         if (live != liveProfile) {
             liveProfile = live
-            rebuildInner()
+            try {
+                rebuildInner()
+            } catch (_: Throwable) {
+                // A profile switch must never crash the app; the old inner
+                // keeps serving with the previous profile.
+            }
         }
     }
 
@@ -110,12 +152,16 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
      * the cap, and restarts the clean-time clock used for decay.
      */
     fun onStall() {
-        lastStallAtMs = SystemClock.elapsedRealtime()
-        val base = if (liveProfile) LIVE_MIN_BUFFER_MS else VOD_MIN_BUFFER_MS
-        val maxLevel = (MAX_MIN_BUFFER_MS - base) / STALL_STEP_MS
-        if (stallLevel < maxLevel) {
-            stallLevel++
-            rebuildInner()
+        try {
+            lastStallAtMs = SystemClock.elapsedRealtime()
+            val base = if (liveProfile) LIVE_MIN_BUFFER_MS else VOD_MIN_BUFFER_MS
+            val maxLevel = (MAX_MIN_BUFFER_MS - base) / STALL_STEP_MS
+            if (stallLevel < maxLevel) {
+                stallLevel++
+                rebuildInner()
+            }
+        } catch (_: Throwable) {
+            // A stall must never crash the app; the buffer just stays put.
         }
     }
 
@@ -148,26 +194,70 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
         }
     }
 
+    /**
+     * Swaps in a freshly built inner control with the current thresholds.
+     *
+     * v1.5: this ONLY swaps the instance and resets the prepared tracking.
+     * It deliberately does NOT call onPrepared/onTracksSelected on the new
+     * inner: a fresh DefaultLoadControl has an empty loadingStates map, so
+     * onTracksSelected would throw NPE (checkNotNull at
+     * DefaultLoadControl.java:730), and calling onPrepared here would pin
+     * the inner to the WRONG thread (onStall runs on the main thread, while
+     * the player prepares on its playback thread). The new inner is prepared
+     * lazily by [ensurePreparedLocked] on the playback thread, atomically
+     * with the next forwarded player call.
+     */
     private fun rebuildInner() {
-        synchronized(lock) {
-            val next = buildInner()
-            inner = next
-            // Restore the new inner's per-period state (see class doc).
-            lastTracksSelected?.let { (parameters, trackGroups, trackSelections) ->
-                next.onTracksSelected(parameters, trackGroups, trackSelections)
+        try {
+            synchronized(lock) {
+                inner = buildInner()
+                preparedOnCurrentInner.clear()
+            }
+        } catch (_: Throwable) {
+            // A failed rebuild must never crash the app; the old inner is
+            // gone, but the next forwarded call re-prepares the new one.
+        }
+    }
+
+    /**
+     * Makes sure the CURRENT inner instance is prepared for [playerId] before
+     * any LoadControl method is forwarded to it. Must be called with [lock]
+     * held, on the player's playback thread (all LoadControl forwarding
+     * happens there). Prepares the fresh inner on first use after a rebuild
+     * and replays the last known non-null track selections so it recomputes
+     * its target buffer for the current period. Never passes null to the
+     * inner: the replay is skipped when no selections were ever recorded.
+     * Throws only if the inner itself throws (callers catch it).
+     */
+    private fun ensurePreparedLocked(playerId: PlayerId, replay: Boolean = true) {
+        if (playerId !in seenPlayerIds || playerId in preparedOnCurrentInner) return
+        inner.onPrepared(playerId)
+        preparedOnCurrentInner.add(playerId)
+        if (replay) {
+            try {
+                lastTracksSelected?.let { (parameters, trackGroups, trackSelections) ->
+                    inner.onTracksSelected(parameters, trackGroups, trackSelections)
+                }
+            } catch (_: Throwable) {
+                // Best-effort replay: the player's own next onTracksSelected
+                // repopulates the target buffer.
             }
         }
     }
 
     /** Decays one stall step after [DECAY_AFTER_MS] with no rebuffer. */
     private fun maybeDecay() {
-        if (stallLevel > 0 && lastStallAtMs > 0L &&
-            SystemClock.elapsedRealtime() - lastStallAtMs > DECAY_AFTER_MS
-        ) {
-            stallLevel--
-            // Restart the clock so each step decays at most once per 10 min.
-            lastStallAtMs = SystemClock.elapsedRealtime()
-            rebuildInner()
+        try {
+            if (stallLevel > 0 && lastStallAtMs > 0L &&
+                SystemClock.elapsedRealtime() - lastStallAtMs > DECAY_AFTER_MS
+            ) {
+                stallLevel--
+                // Restart the clock so each step decays at most once per 10 min.
+                lastStallAtMs = SystemClock.elapsedRealtime()
+                rebuildInner()
+            }
+        } catch (_: Throwable) {
+            // Decay is best-effort; it must never crash the app.
         }
     }
 
@@ -179,7 +269,16 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
         inner.getBackBufferDurationUs(playerId)
 
     override fun onPrepared(playerId: PlayerId) {
-        inner.onPrepared(playerId)
+        try {
+            synchronized(lock) {
+                seenPlayerIds.add(playerId)
+                inner.onPrepared(playerId)
+                preparedOnCurrentInner.add(playerId)
+            }
+        } catch (_: Throwable) {
+            // Preparation failure must never crash the app; the next
+            // forwarded call retries via ensurePreparedLocked.
+        }
     }
 
     override fun onTracksSelected(
@@ -187,26 +286,78 @@ class AdaptiveLoadControl(live: Boolean) : LoadControl {
         trackGroups: TrackGroupArray,
         trackSelections: Array<ExoTrackSelection?>,
     ) {
-        lastTracksSelected = Triple(parameters, trackGroups, trackSelections)
-        inner.onTracksSelected(parameters, trackGroups, trackSelections)
+        try {
+            synchronized(lock) {
+                // The playerId is known-prepared from here on, even if the
+                // player's own onPrepared was somehow missed.
+                seenPlayerIds.add(parameters.playerId)
+                ensurePreparedLocked(parameters.playerId, replay = false)
+                lastTracksSelected = Triple(parameters, trackGroups, trackSelections)
+                inner.onTracksSelected(parameters, trackGroups, trackSelections)
+            }
+        } catch (_: Throwable) {
+            // A track-selection failure must never crash the app.
+        }
     }
 
     override fun onStopped(playerId: PlayerId) {
-        inner.onStopped(playerId)
+        try {
+            synchronized(lock) {
+                seenPlayerIds.remove(playerId)
+                preparedOnCurrentInner.remove(playerId)
+                inner.onStopped(playerId)
+            }
+        } catch (_: Throwable) {
+            // Ignored: stopping must never crash the app.
+        }
     }
 
     override fun onReleased(playerId: PlayerId) {
-        inner.onReleased(playerId)
+        try {
+            synchronized(lock) {
+                seenPlayerIds.remove(playerId)
+                preparedOnCurrentInner.remove(playerId)
+                inner.onReleased(playerId)
+            }
+        } catch (_: Throwable) {
+            // Ignored: releasing must never crash the app.
+        }
     }
 
     override fun shouldContinueLoading(parameters: LoadControl.Parameters): Boolean {
-        maybeDecay()
-        return inner.shouldContinueLoading(parameters)
+        try {
+            maybeDecay()
+        } catch (_: Throwable) {
+            // Ignored: decay is best-effort.
+        }
+        return try {
+            synchronized(lock) {
+                ensurePreparedLocked(parameters.playerId)
+                inner.shouldContinueLoading(parameters)
+            }
+        } catch (_: Throwable) {
+            // Load-control failure degrades to "keep loading" so playback
+            // can proceed; it never crashes the app.
+            true
+        }
     }
 
     override fun shouldStartPlayback(parameters: LoadControl.Parameters): Boolean {
-        maybeDecay()
-        return inner.shouldStartPlayback(parameters)
+        try {
+            maybeDecay()
+        } catch (_: Throwable) {
+            // Ignored: decay is best-effort.
+        }
+        return try {
+            synchronized(lock) {
+                ensurePreparedLocked(parameters.playerId)
+                inner.shouldStartPlayback(parameters)
+            }
+        } catch (_: Throwable) {
+            // Load-control failure degrades to "wait for buffer"; the next
+            // call retries the lazy prepare. It never crashes the app.
+            false
+        }
     }
 
     override fun shouldContinuePreloading(

@@ -44,7 +44,7 @@ class ChannelsFragment : Fragment() {
 
     private val bouquetAdapter = BouquetAdapter(onClick = { selectBouquet(it) })
     private val channelAdapter = ChannelAdapter(
-        onClick = { playChannel(it) },
+        onClick = { onChannelClicked(it) },
         onLongClick = { channel -> showEngineOverride(channel) },
     )
 
@@ -139,6 +139,24 @@ class ChannelsFragment : Fragment() {
             binding.emptyText.visibility =
                 if (currentChannels.isEmpty()) View.VISIBLE else View.GONE
             currentChannels.firstOrNull()?.let { playChannel(it) }
+        }
+    }
+
+    /**
+     * v1.5 — second tap opens fullscreen: the first tap on a channel
+     * selects it and plays it in the preview window; a second tap on the
+     * SAME channel (same streamId) opens the true fullscreen player.
+     * Only user taps go through here — programmatic plays ([selectBouquet]
+     * auto-play, [onResume] re-play) call [playChannel] directly and never
+     * open fullscreen by accident. The adapter item is a normal click
+     * listener on a focusable row, so it works with touch AND with the
+     * remote (DPAD OK key) on phone and box alike.
+     */
+    private fun onChannelClicked(channel: LiveChannel) {
+        if (currentChannel?.streamId == channel.streamId) {
+            openFullscreen()
+        } else {
+            playChannel(channel)
         }
     }
 

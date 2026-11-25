@@ -197,7 +197,15 @@ class ExoLivePlayer(
             when (playbackState) {
                 ExoPlayer.STATE_BUFFERING -> {
                     // Rebuffer (not initial buffering): grow the adaptive buffer.
-                    if (wasReady) loadControl.onStall()
+                    // v1.5: a load-control failure must never crash the app
+                    // (D1 id 9) — swallow it, playback goes on.
+                    if (wasReady) {
+                        try {
+                            loadControl.onStall()
+                        } catch (_: Throwable) {
+                            // Ignored: the adaptive buffer just stays put.
+                        }
+                    }
                     _state.value = PlaybackState.Buffering(player.bufferedPercentage)
                 }
                 ExoPlayer.STATE_READY -> {
