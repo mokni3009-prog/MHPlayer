@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fullscreen player. No "MH Player" corner label (mockup flaw — omitted). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/playerRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <FrameLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:surface_type="surface_view"
+            app:use_controller="false" />
+
+        <org.videolan.libvlc.util.VLCVideoLayout
+            android:id="@+id/vlcLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Switching engine overlay -->
+    <LinearLayout
+        android:id="@+id/switchingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#CC000000"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Changement de lecteur…"
+            android:textSize="20sp"
+            android:textColor="@color/color_text_primary" />
+    </LinearLayout>
+
+    <!-- Error state -->
+    <LinearLayout
+        android:id="@+id/errorView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#CC000000"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Erreur de lecture"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_primary" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <Button
+                android:id="@+id/retryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:text="Réessayer"
+                android:focusable="true"
+                style="@style/Widget.MHPlayer.Button.Primary" />
+
+            <Button
+                android:id="@+id/otherFormatButton"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:layout_marginStart="16dp"
+                android:text="Autre format"
+                android:focusable="true"
+                style="@style/Widget.MHPlayer.Button.Secondary" />
+
+            <Button
+                android:id="@+id/switchEngineButton"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:layout_marginStart="16dp"
+                android:text="Changer de lecteur"
+                android:focusable="true"
+                style="@style/Widget.MHPlayer.Button.Secondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="116dp"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_gradient_top"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back"
+            android:focusable="true"
+            android:clickable="true"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/playerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:text="Sport 1"
+            android:textSize="56sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_primary" />
+
+        <TextView
+            android:id="@+id/liveBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/bg_badge"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:text="EN DIRECT"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_primary" />
+    </LinearLayout>
+
+    <!-- Bottom bar -->
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_gradient_bottom"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp">
+
+        <ImageView
+            android:id="@+id/playPauseButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_circle_outline"
+            android:padding="12dp"
+            android:src="@drawable/ic_pause"
+            android:focusable="true"
+            android:clickable="true"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/currentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:text="14:32"
+            android:textSize="18sp"
+            android:textColor="@color/color_text_primary" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:max="1000"
+            android:progressDrawable="@drawable/seekbar_progress"
+            android:thumb="@drawable/seek_thumb"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/totalTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1:45:00"
+            android:textSize="18sp"
+            android:textColor="@color/color_text_primary" />
+
+        <Button
+            android:id="@+id/goLiveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:text="En direct"
+            android:textSize="14sp"
+            android:visibility="gone"
+            android:focusable="true"
+            style="@style/Widget.MHPlayer.Button.Primary" />
+
+        <ImageView
+            android:id="@+id/volumeButton"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="28dp"
+            android:src="@drawable/ic_volume"
+            android:focusable="true"
+            android:clickable="true"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/settingsButton"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="28dp"
+            android:src="@drawable/ic_settings"
+            android:focusable="true"
+            android:clickable="true"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/fullscreenButton"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="28dp"
+            android:src="@drawable/ic_fullscreen"
+            android:focusable="true"
+            android:clickable="true"
+            android:contentDescription="@null" />
+    </LinearLayout>
+</FrameLayout>

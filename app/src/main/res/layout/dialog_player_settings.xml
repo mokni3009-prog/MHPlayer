@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/color_card_bg"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lecteur"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_primary" />
+
+    <RadioGroup
+        android:id="@+id/engineGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <RadioButton
+            android:id="@+id/engineAuto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Auto"
+            android:textColor="@color/color_text_primary" />
+
+        <RadioButton
+            android:id="@+id/engineExo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="ExoPlayer"
+            android:textColor="@color/color_text_primary" />
+
+        <RadioButton
+            android:id="@+id/engineVlc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="VLC"
+            android:textColor="@color/color_text_primary" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Qualité"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_primary" />
+
+    <RadioGroup
+        android:id="@+id/qualityGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <RadioButton
+            android:id="@+id/qualityAuto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Auto"
+            android:textColor="@color/color_text_primary" />
+
+        <RadioButton
+            android:id="@+id/quality1080"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="1080p"
+            android:textColor="@color/color_text_primary" />
+
+        <RadioButton
+            android:id="@+id/quality720"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="720p"
+            android:textColor="@color/color_text_primary" />
+
+        <RadioButton
+            android:id="@+id/quality480"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="480p"
+            android:textColor="@color/color_text_primary" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Format"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_primary" />
+
+    <RadioGroup
+        android:id="@+id/containerGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <RadioButton
+            android:id="@+id/containerAuto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Auto"
+            android:textColor="@color/color_text_primary" />
+
+        <RadioButton
+            android:id="@+id/containerHls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="HLS"
+            android:textColor="@color/color_text_primary" />
+
+        <RadioButton
+            android:id="@+id/containerTs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="TS"
+            android:textColor="@color/color_text_primary" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/settingsOkButton"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="24dp"
+        android:text="OK"
+        style="@style/Widget.MHPlayer.Button.Primary" />
+</LinearLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Design tokens — DESIGN_TOKENS.md (measured from the 9 approved mockups). -->
+<resources>
+    <color name="color_background">#0A0A0C</color>
+    <color name="color_background_alt">#060A0D</color>
+    <color name="color_sidebar_bg">#121116</color>
+    <color name="color_card_bg">#161618</color>
+    <color name="color_card_bg_2">#171719</color>
+    <color name="color_panel_dark">#0C0B10</color>
+    <color name="color_panel_mid">#222128</color>
+    <color name="color_panel_video">#0E0D12</color>
+    <color name="color_input_bg">#29282B</color>
+    <color name="color_input_border">#55565A</color>
+    <color name="color_chip_inactive_bg">#26272B</color>
+    <color name="color_button_secondary_bg">#212025</color>
+    <color name="color_button_secondary_border">#55565A</color>
+    <color name="color_progress_track">#333333</color>
+    <color name="color_seek_track">#30312C</color>
+    <color name="color_text_primary">#FFFFFF</color>
+    <color name="color_text_secondary">#B0B0B5</color>
+    <color name="color_text_muted">#8A8A8E</color>
+    <color name="color_text_disabled">#6B6B70</color>
+    <color name="color_success_green">#31B561</color>
+    <color name="color_icon_muted">#8E8E93</color>
+    <color name="color_primary_red">#CC2226</color>
+    <color name="color_progress_fill">#E53935</color>
+    <color name="color_selected_row_bg">#2A0A0C</color>
+    <color name="color_logo_play">#D32C2E</color>
+    <color name="color_divider">#1E1E22</color>
+    <color name="color_focus_bg">#1E1E22</color>
+    <color name="color_scrim">#88000000</color>
+</resources>

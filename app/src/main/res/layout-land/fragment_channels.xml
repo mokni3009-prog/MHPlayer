@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/color_background"
+    android:padding="16dp">
+
+    <com.mhplayer.app.ui.SidebarView
+        android:id="@+id/sidebar"
+        android:layout_width="230dp"
+        android:layout_height="match_parent" />
+
+    <!-- Bouquets column -->
+    <LinearLayout
+        android:layout_width="194dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        android:background="@color/color_panel_dark">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="Bouquets"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_primary" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bouquetList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp"
+            android:nextFocusRight="@+id/channelList" />
+    </LinearLayout>
+
+    <!-- Chaînes column -->
+    <LinearLayout
+        android:layout_width="202dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        android:background="@color/color_panel_mid">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="Chaînes"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_primary" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/channelList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp"
+            android:nextFocusLeft="@+id/bouquetList"
+            android:nextFocusRight="@+id/videoContainer" />
+    </LinearLayout>
+
+    <!-- Video preview column -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        android:background="@color/color_panel_video">
+
+        <FrameLayout
+            android:id="@+id/videoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_card"
+            android:focusable="true"
+            android:clickable="true"
+            android:nextFocusLeft="@+id/channelList">
+
+            <androidx.media3.ui.PlayerView
+                android:id="@+id/playerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:surface_type="surface_view"
+                app:use_controller="false" />
+
+            <org.videolan.libvlc.util.VLCVideoLayout
+                android:id="@+id/vlcLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/videoLoading"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
+
+            <ImageView
+                android:id="@+id/miniPlayButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@color/color_focus_bg"
+                android:padding="6dp"
+                android:src="@drawable/ic_play"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/miniCurrentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="00:00"
+                android:textSize="18sp"
+                android:textColor="@color/color_text_primary" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/miniTotalTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="—"
+                android:textSize="18sp"
+                android:textColor="@color/color_text_primary" />
+
+            <ImageView
+                android:id="@+id/miniVolumeButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="24dp"
+                android:src="@drawable/ic_volume"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/miniFullscreenButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="24dp"
+                android:src="@drawable/ic_fullscreen"
+                android:focusable="true"
+                android:clickable="true"
+                android:contentDescription="@null" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp">
+
+            <TextView
+                android:id="@+id/channelTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sport 1"
+                android:textSize="56sp"
+                android:textStyle="bold"
+                android:textColor="@color/color_text_primary" />
+
+            <TextView
+                android:id="@+id/liveBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:background="@drawable/bg_badge"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:text="EN DIRECT"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/color_text_primary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/channelSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:paddingStart="24dp"
+            android:text="Match de football"
+            android:textSize="20sp"
+            android:textColor="@color/color_text_secondary" />
+
+        <TextView
+            android:id="@+id/emptyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Aucun contenu"
+            android:textSize="20sp"
+            android:textColor="@color/color_text_muted"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

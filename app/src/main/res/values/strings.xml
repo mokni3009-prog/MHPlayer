@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MH Player</string>
+    <string name="sidebar_home">Accueil</string>
+    <string name="sidebar_channels">Chaînes</string>
+    <string name="sidebar_movies">Films</string>
+    <string name="sidebar_series">Séries</string>
+    <string name="sidebar_playlist">Ma playlist</string>
+</resources>

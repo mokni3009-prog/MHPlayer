@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dimensions — DESIGN_TOKENS.md, 1280x720 baseline. -->
+<resources>
+    <dimen name="sidebar_width">230dp</dimen>
+    <dimen name="sidebar_logo_icon">36dp</dimen>
+    <dimen name="sidebar_item_height">64dp</dimen>
+    <dimen name="sidebar_item_icon">24dp</dimen>
+    <dimen name="sidebar_item_gap">16dp</dimen>
+    <dimen name="sidebar_padding_left">24dp</dimen>
+    <dimen name="sidebar_selected_bar_width">4dp</dimen>
+
+    <dimen name="radius_card_large">20dp</dimen>
+    <dimen name="radius_card">16dp</dimen>
+    <dimen name="radius_button">12dp</dimen>
+    <dimen name="radius_chip">28dp</dimen>
+    <dimen name="radius_input">10dp</dimen>
+    <dimen name="radius_poster">12dp</dimen>
+    <dimen name="radius_badge">10dp</dimen>
+
+    <dimen name="login_card_width">530dp</dimen>
+    <dimen name="input_height">56dp</dimen>
+    <dimen name="button_primary_height">64dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="chip_height">40dp</dimen>
+
+    <dimen name="poster_width_land">137dp</dimen>
+    <dimen name="poster_height_land">188dp</dimen>
+    <dimen name="poster_width_home">112dp</dimen>
+    <dimen name="poster_height_home">168dp</dimen>
+    <dimen name="thumb_width">150dp</dimen>
+    <dimen name="thumb_height">84dp</dimen>
+    <dimen name="details_poster_width">330dp</dimen>
+    <dimen name="details_poster_height">388dp</dimen>
+
+    <dimen name="content_margin">32dp</dimen>
+    <dimen name="content_margin_left">40dp</dimen>
+    <dimen name="grid_gap">20dp</dimen>
+    <dimen name="row_gap">16dp</dimen>
+    <dimen name="section_gap">48dp</dimen>
+</resources>

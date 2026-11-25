@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Series poster card: image on top + dark label bar below (radius 12dp top corners only on the image). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/selector_focusable"
+    android:padding="2dp"
+    android:focusable="true"
+    android:clickable="true">
+
+    <ImageView
+        android:id="@+id/posterImage"
+        android:layout_width="137dp"
+        android:layout_height="188dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/poster_placeholder"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/posterTitle"
+        android:layout_width="137dp"
+        android:layout_height="36dp"
+        android:gravity="center"
+        android:background="@drawable/bg_episode_label"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/color_text_primary"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+</LinearLayout>

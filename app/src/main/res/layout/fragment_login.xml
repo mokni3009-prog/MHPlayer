@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background_alt">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="40dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:paddingTop="48dp"
+                android:paddingBottom="32dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:src="@drawable/logo_play"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="MH Player"
+                        android:textSize="56sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/color_text_primary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/tabXtream"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:focusable="true"
+                        android:clickable="true">
+
+                        <TextView
+                            android:id="@+id/tabXtreamLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Xtream Codes"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/color_text_primary" />
+
+                        <View
+                            android:id="@+id/tabXtreamUnderline"
+                            android:layout_width="120dp"
+                            android:layout_height="3dp"
+                            android:layout_marginTop="6dp"
+                            android:background="@color/color_primary_red" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tabM3u"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="#444444"
+                        android:focusable="true"
+                        android:clickable="true">
+
+                        <TextView
+                            android:id="@+id/tabM3uLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Playlist M3U"
+                            android:textSize="20sp"
+                            android:textColor="@color/color_text_muted" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Xtream Codes form -->
+                <LinearLayout
+                    android:id="@+id/formXtream"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Serveur (URL)"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_text_primary" />
+
+                    <EditText
+                        android:id="@+id/inputServer"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="https://serveur.example.com"
+                        android:inputType="textUri"
+                        style="@style/Widget.MHPlayer.Input" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Nom d'utilisateur"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_text_primary" />
+
+                    <EditText
+                        android:id="@+id/inputUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="ex: utilisateur123"
+                        android:inputType="text"
+                        style="@style/Widget.MHPlayer.Input" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Mot de passe"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_text_primary" />
+
+                    <EditText
+                        android:id="@+id/inputPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="••••••••••"
+                        android:inputType="textPassword"
+                        style="@style/Widget.MHPlayer.Input" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Nom de la playlist"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_text_primary" />
+
+                    <EditText
+                        android:id="@+id/inputPlaylistName"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="ex: Ma playlist"
+                        android:inputType="text"
+                        style="@style/Widget.MHPlayer.Input" />
+                </LinearLayout>
+
+                <!-- Playlist M3U form -->
+                <LinearLayout
+                    android:id="@+id/formM3u"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="24dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="URL de la playlist"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_text_primary" />
+
+                    <EditText
+                        android:id="@+id/inputM3uUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="https://serveur.example.com/playlist.m3u"
+                        android:inputType="textUri"
+                        style="@style/Widget.MHPlayer.Input" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Nom de la playlist"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_text_primary" />
+
+                    <EditText
+                        android:id="@+id/inputM3uPlaylistName"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="ex: Ma playlist"
+                        android:inputType="text"
+                        style="@style/Widget.MHPlayer.Input" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/loginButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Se connecter"
+                    style="@style/Widget.MHPlayer.Button.Primary" />
+
+                <ProgressBar
+                    android:id="@+id/loginProgress"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/errorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    android:textColor="@color/color_primary_red"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/loginFooter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:text="Connexion Xtream Codes"
+                    android:textSize="16sp"
+                    android:textColor="@color/color_text_muted" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
