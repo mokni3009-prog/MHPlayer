@@ -30,10 +30,17 @@
     <!-- Text styles (all Poppins; titles bold, body semibold).
          Base parents are required: AAPT resolves the implicit dot-parent
          of every Text.Zeno.* / Widget.Zeno.* style at link time. -->
+    <style name="Text">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">@color/zeno_text_primary</item>
+    </style>
+
     <style name="Text.Zeno">
         <item name="android:fontFamily">@font/poppins</item>
         <item name="android:textColor">@color/zeno_text_primary</item>
     </style>
+
+    <style name="Widget" />
 
     <style name="Widget.Zeno" />
 
