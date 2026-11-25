@@ -3,6 +3,8 @@ package com.mhplayer.app.player
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.media.MediaCodecInfo
+import android.media.MediaCodecList
 import android.net.Uri
 import android.os.Build
 import android.util.DisplayMetrics
@@ -12,7 +14,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.CacheDataSource
+import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
@@ -29,9 +31,9 @@ import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy.LoadErrorInfo
 import androidx.media3.exoplayer.util.EventLogger
 import androidx.media3.common.ParserException
-import androidx.media3.datasource.cache.StandaloneDatabaseProvider
+import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.datasource.cmcd.CmcdConfiguration
+import androidx.media3.exoplayer.upstream.CmcdConfiguration
 import androidx.media3.ui.PlayerView
 import java.io.File
 import java.io.FileNotFoundException
@@ -227,10 +229,12 @@ class ExoLivePlayer(
 
     init {
         // --- ABR / track selection (report §1) ---
-        val adaptiveFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
-            .setBandwidthFraction(0.75f)
-            .setMinDurationForQualityIncreaseMs(5_000)
-            .setMaxDurationForQualityDecreaseMs(25_000)
+        val adaptiveFactory = AdaptiveTrackSelection.Factory(
+            /* minDurationForQualityIncreaseMs = */ 5_000,
+            /* maxDurationForQualityDecreaseMs = */ 25_000,
+            /* minDurationToRetainAfterDiscardMs = */ 25_000,
+            /* bandwidthFraction = */ 0.75f,
+        )
         trackSelector = DefaultTrackSelector(appContext, adaptiveFactory)
         applyTrackCaps()
 
@@ -242,14 +246,14 @@ class ExoLivePlayer(
         httpDataSourceFactory = OkHttpDataSource.Factory(playerClient)
             .setUserAgent(USER_AGENT)
 
-        val cmcdFactory = CmcdConfiguration.Factory()
+        val cmcdFactory = CmcdConfiguration.Factory.DEFAULT
         liveMediaSourceFactory = DefaultMediaSourceFactory(appContext)
             .setDataSourceFactory(httpDataSourceFactory)
             .setLiveTargetOffsetMs(LIVE_TARGET_OFFSET_MS)
             .setLiveMinOffsetMs(LIVE_MIN_OFFSET_MS)
             .setLiveMaxOffsetMs(LIVE_MAX_OFFSET_MS)
-            .setLiveMinPlaybackSpeed(LIVE_MIN_SPEED)
-            .setLiveMaxPlaybackSpeed(LIVE_MAX_SPEED)
+            .setLiveMinSpeed(LIVE_MIN_SPEED)
+            .setLiveMaxSpeed(LIVE_MAX_SPEED)
             .setLoadErrorHandlingPolicy(retryPolicy)
             .setCmcdConfigurationFactory(cmcdFactory)
 
@@ -260,6 +264,7 @@ class ExoLivePlayer(
 
         player = ExoPlayer.Builder(appContext)
             .setTrackSelector(trackSelector)
+            .setBandwidthMeter(bandwidthMeter)
             .setLoadControl(loadControl)
             .setRenderersFactory(renderersFactory)
             .setMediaSourceFactory(liveMediaSourceFactory)
@@ -301,8 +306,8 @@ class ExoLivePlayer(
                     .setLiveTargetOffsetMs(LIVE_TARGET_OFFSET_MS)
                     .setLiveMinOffsetMs(LIVE_MIN_OFFSET_MS)
                     .setLiveMaxOffsetMs(LIVE_MAX_OFFSET_MS)
-                    .setLiveMinPlaybackSpeed(LIVE_MIN_SPEED)
-                    .setLiveMaxPlaybackSpeed(LIVE_MAX_SPEED)
+                    .setLiveMinSpeed(LIVE_MIN_SPEED)
+                    .setLiveMaxSpeed(LIVE_MAX_SPEED)
                     .setLoadErrorHandlingPolicy(retryPolicy)
                     .setCmcdConfigurationFactory(cmcdFactory)
             }
@@ -453,10 +458,7 @@ class ExoLivePlayer(
         } else {
             displaySize()
         }
-        val tunnelingEnabled = isTvProfile &&
-            appContext.packageManager.hasSystemFeature(
-                PackageManager.FEATURE_TUNNELED_PLAYBACK,
-            )
+        val tunnelingEnabled = isTvProfile && supportsTunneledPlayback()
         val builder = trackSelector.buildUponParameters()
             .setMaxVideoSize(maxWidth, maxHeight)
             .setTunnelingEnabled(tunnelingEnabled)
@@ -464,10 +466,23 @@ class ExoLivePlayer(
             // H616: no AV1 HW decoder. Prefer HEVC, then AVC; AV1 is excluded
             // from the preferred list (report §§1.8, 6.4).
             builder.setPreferredVideoMimeTypes(
-                arrayOf(MimeTypes.VIDEO_H265, MimeTypes.VIDEO_H264),
+                MimeTypes.VIDEO_H265, MimeTypes.VIDEO_H264,
             )
         }
         trackSelector.parameters = builder.build()
+    }
+
+    /** True when at least one video decoder on this device supports tunneled playback. */
+    private fun supportsTunneledPlayback(): Boolean {
+        val codecList = MediaCodecList(MediaCodecList.REGULAR_CODECS)
+        return codecList.codecInfos.any { info ->
+            !info.isEncoder && info.supportedTypes.any { type ->
+                runCatching {
+                    info.getCapabilitiesForType(type)
+                        .isFeatureSupported(MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback)
+                }.getOrDefault(false)
+            }
+        }
     }
 
     private fun displaySize(): Pair<Int, Int> {
@@ -590,7 +605,7 @@ class ExoLivePlayer(
                 emitError(PlaybackErrorKind.Network, "Connexion perdue")
             }
             PlaybackException.ERROR_CODE_AUDIO_TRACK_INIT_FAILED,
-            PlaybackException.ERROR_CODE_VIDEO_TRACK_INIT_FAILED -> {
+            PlaybackException.ERROR_CODE_DECODER_INIT_FAILED -> {
                 // Recreate the sink once by re-preparing; then surface the error.
                 val mediaItem = currentMediaItem
                 if (!trackInitRecovered && mediaItem != null) {
