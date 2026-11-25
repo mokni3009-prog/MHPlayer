@@ -14,6 +14,7 @@ import com.mhplayer.app.player.ExoLivePlayer
 import com.mhplayer.app.player.VlcLivePlayer
 import com.mhplayer.app.util.CrashReporter
 import com.mhplayer.app.util.NetworkMonitor
+import com.mhplayer.app.util.RemoteTestMode
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -99,6 +100,12 @@ class App : Application() {
         // captured and sent to our server (it also uploads queued reports
         // from a previous crashed run).
         CrashReporter.install(this)
+        // Remote test mode (v1.4, DEV ONLY): lets Sahboush drive the app on
+        // the user's phone through our Cloudflare Worker. Gated by the
+        // REMOTE_TEST_ENABLED build flag — removed in the final release.
+        if (BuildConfig.REMOTE_TEST_ENABLED) {
+            RemoteTestMode.start(this)
+        }
         networkMonitor.start()
     }
 }

@@ -30,4 +30,16 @@
     <color name="color_divider">#1E1E22</color>
     <color name="color_focus_bg">#1E1E22</color>
     <color name="color_scrim">#88000000</color>
+
+    <!-- Modern redesign (v1.4): login / loading / update dialog. -->
+    <color name="color_red_gradient_start">#F04438</color>
+    <color name="color_red_gradient_end">#A81E22</color>
+    <color name="color_card_modern">#141416</color>
+    <color name="color_card_border">#2A2A30</color>
+    <color name="color_input_modern_bg">#1E1E22</color>
+    <color name="color_input_modern_border">#34343A</color>
+    <color name="color_glow_top">#33100F</color>
+    <color name="color_track">#26262B</color>
+    <color name="color_badge_bg">#3A1214</color>
+
 </resources>

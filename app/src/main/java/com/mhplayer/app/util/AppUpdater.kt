@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.Settings
+import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -42,6 +44,14 @@ import java.util.concurrent.atomic.AtomicBoolean
  * If the user has not allowed "install unknown apps", the app shows a
  * clear message explaining to enable it once in Settings; when they
  * come back, [onResume] offers the pending update again.
+ *
+ * v1.4 FIX: the APK now downloads to the app's PRIVATE external files
+ * dir (no storage permission needed on any API level). v1.2/v1.3 used the
+ * public Downloads folder, which needs WRITE_EXTERNAL_STORAGE on
+ * Android 9 — the app does not declare it, so enqueue() threw and the
+ * update silently did nothing. Download failures are now visible
+ * (Toast) and the dialog is re-offered; a DownloadManager failure
+ * falls back to a plain OkHttp download.
  *
  * The updater must never crash the app: every entry point is wrapped
  * in try/catch, and a failed check/download simply does nothing.
@@ -130,23 +140,43 @@ object AppUpdater {
     }
 
     private fun showUpdateDialog(activity: AppCompatActivity, info: VersionInfo) {
+        // v1.4 redesign: modern custom dialog (logo badge + version chip +
+        // changelog + two modern buttons) instead of the plain system dialog.
         try {
-            val message = buildString {
-                append("Une nouvelle version (v${info.versionName}) est disponible.")
+            val view = LayoutInflater.from(activity)
+                .inflate(com.mhplayer.app.R.layout.dialog_update, null)
+            val versionChip = view.findViewById<android.widget.TextView>(
+                com.mhplayer.app.R.id.updateVersionChip,
+            )
+            versionChip.text = "v${info.versionName}"
+            val changelogView = view.findViewById<android.widget.TextView>(
+                com.mhplayer.app.R.id.updateChangelog,
+            )
+            changelogView.text = buildString {
+                append("Une nouvelle version est disponible.")
                 if (info.changelog.isNotBlank()) {
                     append("\n\n")
                     append(info.changelog)
                 }
             }
-            AlertDialog.Builder(activity)
-                .setTitle("Mise à jour disponible")
-                .setMessage(message)
-                .setPositiveButton("Mettre à jour") { _, _ ->
-                    startUpdate(activity, info)
-                }
-                .setNegativeButton("Plus tard", null)
+            val dialog = AlertDialog.Builder(activity)
+                .setView(view)
                 .setCancelable(true)
-                .show()
+                .create()
+            view.findViewById<android.widget.Button>(
+                com.mhplayer.app.R.id.updateButton,
+            ).setOnClickListener {
+                dialog.dismiss()
+                startUpdate(activity, info)
+            }
+            view.findViewById<android.widget.Button>(
+                com.mhplayer.app.R.id.updateLaterButton,
+            ).setOnClickListener { dialog.dismiss() }
+            dialog.show()
+            // Transparent window so the rounded dialog card shows through.
+            dialog.window?.setBackgroundDrawable(
+                ColorDrawable(android.graphics.Color.TRANSPARENT),
+            )
         } catch (_: Throwable) {
             // Never crash the app.
         }
@@ -200,32 +230,86 @@ object AppUpdater {
     }
 
     private fun downloadApk(activity: AppCompatActivity, info: VersionInfo) {
+        // v1.4 FIX (update button did nothing on v1.2/v1.3): the old code
+        // downloaded to the PUBLIC Downloads folder
+        // (setDestinationInExternalPublicDir), which on Android 9 (API 28,
+        // the user's Infinix X650C) requires WRITE_EXTERNAL_STORAGE — a
+        // permission the app does not declare. dm.enqueue() threw
+        // SecurityException, swallowed by the catch-all, so the dialog
+        // vanished and nothing happened. The fix downloads to the app's
+        // PRIVATE external files dir: no storage permission is needed on
+        // any API level. Failures are now VISIBLE (Toast) instead of silent.
         try {
-            val fileName = "MH-Player-v${info.versionName}.apk"
+            val updatesDir = File(activity.getExternalFilesDir(null), "updates")
+                .apply { mkdirs() }
+            val file = File(updatesDir, "MH-Player-v${info.versionName}.apk")
+            if (file.exists()) file.delete()
             val request = DownloadManager.Request(Uri.parse(info.apkUrl))
                 .setTitle("MH Player v${info.versionName}")
                 .setDescription("Téléchargement de la mise à jour…")
                 .setNotificationVisibility(
                     DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED,
                 )
-                .setDestinationInExternalPublicDir(
-                    Environment.DIRECTORY_DOWNLOADS,
-                    fileName,
-                )
+                .setDestinationUri(Uri.fromFile(file))
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
             val dm = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val downloadId = dm.enqueue(request)
-            registerCompletionReceiver(activity, downloadId, fileName)
+            registerCompletionReceiver(activity, downloadId, file, info)
         } catch (_: Throwable) {
-            // Never crash the app.
+            // DownloadManager unavailable/disabled on this device: fall back
+            // to a plain OkHttp download to the same private file.
+            downloadApkFallback(activity, info)
+        }
+    }
+
+    /** Fallback when DownloadManager is missing/disabled: OkHttp download. */
+    private fun downloadApkFallback(activity: AppCompatActivity, info: VersionInfo) {
+        try {
+            Toast.makeText(
+                activity,
+                "Téléchargement de la mise à jour…",
+                Toast.LENGTH_SHORT,
+            ).show()
+            activity.lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val updatesDir = File(activity.getExternalFilesDir(null), "updates")
+                        .apply { mkdirs() }
+                    val file = File(updatesDir, "MH-Player-v${info.versionName}.apk")
+                    val request = Request.Builder().url(info.apkUrl).get().build()
+                    httpClient.newCall(request).execute().use { response ->
+                        if (!response.isSuccessful) throw java.io.IOException("HTTP ${response.code}")
+                        val body = response.body ?: throw java.io.IOException("Empty body")
+                        file.outputStream().use { out -> body.byteStream().copyTo(out) }
+                    }
+                    withContext(Dispatchers.Main) { installApk(activity, file, info) }
+                } catch (_: Throwable) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            activity,
+                            "Échec du téléchargement de la mise à jour",
+                            Toast.LENGTH_LONG,
+                        ).show()
+                        pendingUpdate = info
+                        showUpdateDialog(activity, info)
+                    }
+                }
+            }
+        } catch (_: Throwable) {
+            Toast.makeText(
+                activity,
+                "Échec du téléchargement de la mise à jour",
+                Toast.LENGTH_LONG,
+            ).show()
+            pendingUpdate = info
         }
     }
 
     private fun registerCompletionReceiver(
         activity: AppCompatActivity,
         downloadId: Long,
-        fileName: String,
+        file: File,
+        info: VersionInfo,
     ) {
         try {
             val appContext = activity.applicationContext
@@ -239,7 +323,30 @@ object AppUpdater {
                         )
                         if (id != downloadId) return
                         appContext.unregisterReceiver(this)
-                        installApk(appContext, fileName)
+                        // v1.4: check the download actually SUCCEEDED before
+                        // installing (a failed download used to be ignored).
+                        val dm = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                        val status = dm.query(
+                            DownloadManager.Query().setFilterById(downloadId),
+                        )?.use { cursor ->
+                            if (cursor.moveToFirst()) {
+                                cursor.getInt(
+                                    cursor.getColumnIndexOrThrow(
+                                        DownloadManager.COLUMN_STATUS,
+                                    ),
+                                )
+                            } else DownloadManager.STATUS_FAILED
+                        } ?: DownloadManager.STATUS_FAILED
+                        if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                            installApk(appContext, file, info)
+                        } else {
+                            Toast.makeText(
+                                appContext,
+                                "Échec du téléchargement de la mise à jour",
+                                Toast.LENGTH_LONG,
+                            ).show()
+                            pendingUpdate = info
+                        }
                     } catch (_: Throwable) {
                         runCatching { appContext.unregisterReceiver(this) }
                     }
@@ -252,23 +359,26 @@ object AppUpdater {
                 appContext.registerReceiver(receiver, filter)
             }
         } catch (_: Throwable) {
-            // Never crash the app.
+            downloadApkFallback(activity, info)
         }
     }
 
-    private fun installApk(context: Context, fileName: String) {
+    private fun installApk(context: Context, file: File, info: VersionInfo) {
         try {
-            val file = File(
-                Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS,
-                ),
-                fileName,
-            )
-            if (!file.exists()) return
+            if (!file.exists()) {
+                Toast.makeText(
+                    context,
+                    "Échec de la mise à jour — fichier introuvable",
+                    Toast.LENGTH_LONG,
+                ).show()
+                pendingUpdate = info
+                return
+            }
             // Unknown-sources permission: re-check right before installing.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 !context.packageManager.canRequestPackageInstalls()
             ) {
+                pendingUpdate = info
                 return
             }
             val uri = FileProvider.getUriForFile(
@@ -285,7 +395,12 @@ object AppUpdater {
             }
             context.startActivity(intent)
         } catch (_: Throwable) {
-            // Never crash the app.
+            Toast.makeText(
+                context,
+                "Impossible d'installer la mise à jour",
+                Toast.LENGTH_LONG,
+            ).show()
+            pendingUpdate = info
         }
     }
 

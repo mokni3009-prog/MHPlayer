@@ -20,9 +20,13 @@ android {
         applicationId = "com.mhplayer.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
         ndk { abiFilters += listOf("arm64-v8a") }
+
+        // Remote test mode (v1.4, dev only): RemoteTestMode polls our Cloudflare
+        // Worker for test commands. Removed in the final release (set false).
+        buildConfigField("boolean", "REMOTE_TEST_ENABLED", "true")
     }
 
     signingConfigs {

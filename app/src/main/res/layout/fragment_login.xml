@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Login — responsive (v1.3): the card is 0dp wide inside a ConstraintLayout
-     with 24dp side margins and a 530dp max width, so it never clips on narrow
-     phones; vertical sizes come from the screen-size dimens buckets. The
-     ScrollView keeps the whole form reachable (incl. with the keyboard open). -->
+<!-- Login — modern redesign (v1.4, designer graphique): gradient background
+     with a soft red glow, glass card, red logo badge, segmented pill tabs,
+     modern inputs with icons and a red focus border, gradient CTA button.
+     Same content as the approved screen: 2 tabs, 4 Xtream fields + 2 M3U
+     fields, red "Se connecter". Responsive (v1.3): card 0dp wide, 24dp side
+     margins, 530dp max width, ScrollView keeps the form reachable. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_background_alt">
+    android:background="@drawable/bg_login_gradient">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,11 +24,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:paddingStart="@dimen/login_card_padding_side"
-                android:paddingEnd="@dimen/login_card_padding_side"
-                android:paddingTop="@dimen/login_card_padding_top"
-                android:paddingBottom="@dimen/login_card_padding_bottom"
+                android:background="@drawable/bg_card_modern"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -37,33 +39,48 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                <!-- Logo badge + wordmark + tagline -->
+                <FrameLayout
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/bg_logo_badge">
 
                     <ImageView
-                        android:layout_width="@dimen/logo_icon"
-                        android:layout_height="@dimen/logo_icon"
-                        android:src="@drawable/logo_play"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/logo_play_white"
                         android:contentDescription="@null" />
+                </FrameLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/logo_text_margin"
-                        android:text="MH Player"
-                        android:textSize="@dimen/text_logo"
-                        android:textStyle="bold"
-                        android:textColor="@color/color_text_primary" />
-                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="12dp"
+                    android:text="MH Player"
+                    android:textSize="@dimen/text_logo"
+                    android:textStyle="bold"
+                    android:textColor="@color/color_text_primary" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="4dp"
+                    android:text="Votre IPTV, partout."
+                    android:textSize="14sp"
+                    android:textColor="@color/color_text_muted" />
+
+                <!-- Segmented pill tabs -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/tab_height"
-                    android:layout_marginTop="@dimen/form_margin_top"
-                    android:orientation="horizontal">
+                    android:layout_height="48dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:background="@drawable/bg_tab_container"
+                    android:padding="4dp">
 
                     <LinearLayout
                         android:id="@+id/tabXtream"
@@ -72,6 +89,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:gravity="center"
+                        android:background="@drawable/bg_tab_pill_active"
                         android:focusable="true"
                         android:clickable="true">
 
@@ -83,13 +101,6 @@
                             android:textSize="@dimen/text_tab"
                             android:textStyle="bold"
                             android:textColor="@color/color_text_primary" />
-
-                        <View
-                            android:id="@+id/tabXtreamUnderline"
-                            android:layout_width="@dimen/tab_underline_width"
-                            android:layout_height="3dp"
-                            android:layout_marginTop="6dp"
-                            android:background="@color/color_primary_red" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -99,7 +110,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:background="@color/color_tab_inactive"
+                        android:background="@drawable/bg_tab_pill_inactive"
                         android:focusable="true"
                         android:clickable="true">
 
@@ -119,14 +130,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="@dimen/form_margin_top">
+                    android:layout_marginTop="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Serveur (URL)"
                         android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/color_text_secondary" />
 
                     <EditText
                         android:id="@+id/inputServer"
@@ -135,15 +146,16 @@
                         android:layout_marginTop="@dimen/form_gap"
                         android:hint="https://serveur.example.com"
                         android:inputType="textUri"
-                        style="@style/Widget.MHPlayer.Input" />
+                        android:drawableStart="@drawable/ic_globe"
+                        style="@style/Widget.MHPlayer.Input.Modern" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
+                        android:layout_marginTop="12dp"
                         android:text="Nom d'utilisateur"
                         android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/color_text_secondary" />
 
                     <EditText
                         android:id="@+id/inputUsername"
@@ -152,15 +164,16 @@
                         android:layout_marginTop="@dimen/form_gap"
                         android:hint="ex: utilisateur123"
                         android:inputType="text"
-                        style="@style/Widget.MHPlayer.Input" />
+                        android:drawableStart="@drawable/ic_user"
+                        style="@style/Widget.MHPlayer.Input.Modern" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
+                        android:layout_marginTop="12dp"
                         android:text="Mot de passe"
                         android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/color_text_secondary" />
 
                     <EditText
                         android:id="@+id/inputPassword"
@@ -169,15 +182,16 @@
                         android:layout_marginTop="@dimen/form_gap"
                         android:hint="••••••••••"
                         android:inputType="textPassword"
-                        style="@style/Widget.MHPlayer.Input" />
+                        android:drawableStart="@drawable/ic_lock"
+                        style="@style/Widget.MHPlayer.Input.Modern" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
+                        android:layout_marginTop="12dp"
                         android:text="Nom de la playlist"
                         android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/color_text_secondary" />
 
                     <EditText
                         android:id="@+id/inputPlaylistName"
@@ -186,7 +200,8 @@
                         android:layout_marginTop="@dimen/form_gap"
                         android:hint="ex: Ma playlist"
                         android:inputType="text"
-                        style="@style/Widget.MHPlayer.Input" />
+                        android:drawableStart="@drawable/ic_list"
+                        style="@style/Widget.MHPlayer.Input.Modern" />
                 </LinearLayout>
 
                 <!-- Playlist M3U form -->
@@ -195,7 +210,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="@dimen/form_margin_top"
+                    android:layout_marginTop="20dp"
                     android:visibility="gone">
 
                     <TextView
@@ -203,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:text="URL de la playlist"
                         android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/color_text_secondary" />
 
                     <EditText
                         android:id="@+id/inputM3uUrl"
@@ -212,15 +227,16 @@
                         android:layout_marginTop="@dimen/form_gap"
                         android:hint="https://serveur.example.com/playlist.m3u"
                         android:inputType="textUri"
-                        style="@style/Widget.MHPlayer.Input" />
+                        android:drawableStart="@drawable/ic_globe"
+                        style="@style/Widget.MHPlayer.Input.Modern" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/form_gap"
+                        android:layout_marginTop="12dp"
                         android:text="Nom de la playlist"
                         android:textSize="@dimen/text_label"
-                        android:textColor="@color/color_text_primary" />
+                        android:textColor="@color/color_text_secondary" />
 
                     <EditText
                         android:id="@+id/inputM3uPlaylistName"
@@ -229,16 +245,17 @@
                         android:layout_marginTop="@dimen/form_gap"
                         android:hint="ex: Ma playlist"
                         android:inputType="text"
-                        style="@style/Widget.MHPlayer.Input" />
+                        android:drawableStart="@drawable/ic_list"
+                        style="@style/Widget.MHPlayer.Input.Modern" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/loginButton"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/button_primary_height"
-                    android:layout_marginTop="@dimen/form_margin_top"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="20dp"
                     android:text="Se connecter"
-                    style="@style/Widget.MHPlayer.Button.Primary" />
+                    style="@style/Widget.MHPlayer.Button.PrimaryModern" />
 
                 <ProgressBar
                     android:id="@+id/loginProgress"
@@ -262,7 +279,7 @@
                     android:id="@+id/loginFooter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/form_gap"
+                    android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="Connexion Xtream Codes"
                     android:textSize="@dimen/text_footer"

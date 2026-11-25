@@ -61,7 +61,16 @@ class LoginFragment : Fragment() {
         isM3uTab = m3u
         binding.formXtream.visibility = if (m3u) View.GONE else View.VISIBLE
         binding.formM3u.visibility = if (m3u) View.VISIBLE else View.GONE
-        binding.tabXtreamUnderline.visibility = if (m3u) View.INVISIBLE else View.VISIBLE
+        // v1.4 redesign: segmented pill tabs — the active tab gets the red
+        // gradient pill, the inactive one stays transparent.
+        binding.tabXtream.setBackgroundResource(
+            if (m3u) com.mhplayer.app.R.drawable.bg_tab_pill_inactive
+            else com.mhplayer.app.R.drawable.bg_tab_pill_active,
+        )
+        binding.tabM3u.setBackgroundResource(
+            if (m3u) com.mhplayer.app.R.drawable.bg_tab_pill_active
+            else com.mhplayer.app.R.drawable.bg_tab_pill_inactive,
+        )
         binding.tabXtreamLabel.setTextColor(
             requireContext().getColor(
                 if (m3u) com.mhplayer.app.R.color.color_text_muted
@@ -72,12 +81,6 @@ class LoginFragment : Fragment() {
             requireContext().getColor(
                 if (m3u) com.mhplayer.app.R.color.color_text_primary
                 else com.mhplayer.app.R.color.color_text_muted,
-            ),
-        )
-        binding.tabM3u.setBackgroundColor(
-            requireContext().getColor(
-                if (m3u) android.R.color.transparent
-                else com.mhplayer.app.R.color.color_tab_inactive,
             ),
         )
         binding.loginFooter.text =

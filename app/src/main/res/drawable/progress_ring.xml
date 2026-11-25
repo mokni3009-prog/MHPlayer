@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Loading ring: white full circle underneath, red progress arc on top. -->
+<!-- Loading ring (v1.4 redesign): dark track underneath, thin red arc on top. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape
             android:shape="ring"
             android:innerRadiusRatio="2.6"
-            android:thickness="14dp"
+            android:thickness="8dp"
             android:useLevel="false">
-            <solid android:color="#FFFFFF" />
+            <solid android:color="@color/color_track" />
         </shape>
     </item>
     <item android:id="@android:id/progress">
         <shape
             android:shape="ring"
             android:innerRadiusRatio="2.6"
-            android:thickness="14dp"
+            android:thickness="8dp"
             android:useLevel="true">
-            <solid android:color="#E53935" />
+            <solid android:color="@color/color_red_gradient_start" />
         </shape>
     </item>
 </layer-list>

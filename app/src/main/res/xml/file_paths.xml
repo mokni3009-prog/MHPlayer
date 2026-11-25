@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Self-update (v1.2): the downloaded APK lives in the public Downloads
-     folder (DownloadManager), FileProvider serves it to the installer. -->
+<!-- Self-update (v1.4): the downloaded APK lives in the app's PRIVATE
+     external files dir (getExternalFilesDir("updates")) — no storage
+     permission is needed on any API level (v1.2/v1.3 used the public
+     Downloads folder, which needs WRITE_EXTERNAL_STORAGE on Android 9
+     and broke the update). FileProvider serves it to the installer. -->
 <paths>
-    <external-path name="downloads" path="Download/" />
+    <external-files-path name="updates" path="updates/" />
 </paths>

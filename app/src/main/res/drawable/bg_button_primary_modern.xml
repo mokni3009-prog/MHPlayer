@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modern primary button (v1.4): red gradient, large radius. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="90"
+        android:startColor="@color/color_red_gradient_start"
+        android:endColor="@color/color_red_gradient_end"
+        android:type="linear" />
+    <corners android:radius="14dp" />
+</shape>

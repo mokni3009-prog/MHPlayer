@@ -48,8 +48,13 @@ class LoadingFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 if (app.sessionManager.getCredentials() != null) {
+                    // v1.4: loadAll reports progress from Dispatchers.IO —
+                    // View updates MUST run on the Main thread. Posting them
+                    // here (not inside the repository) keeps the repository
+                    // UI-agnostic. runOnUiThread also fixes the stuck/racy
+                    // progress (10% with a stale message) seen on v1.3.
                     app.repository.loadAll { step, percent, message ->
-                        updateProgress(step, percent, message)
+                        activity.runOnUiThread { updateProgress(step, percent, message) }
                     }
                 } else {
                     // M3U login: no Xtream auth — fetch + parse the playlist.
@@ -63,6 +68,7 @@ class LoadingFragment : Fragment() {
                 }
                 activity.openHome()
             } catch (e: Exception) {
+                if (!isAdded) return@launch
                 binding.errorText.text =
                     "Échec du chargement — vérifiez votre connexion puis réessayez"
                 binding.errorText.visibility = View.VISIBLE
@@ -73,7 +79,7 @@ class LoadingFragment : Fragment() {
     }
 
     private fun updateProgress(step: String, percent: Int, message: String) {
-        if (!isAdded) return
+        if (!isAdded || _binding == null) return
         binding.progressBar.progress = percent
         binding.progressRing.progress = percent
         binding.percentText.text = "$percent%"

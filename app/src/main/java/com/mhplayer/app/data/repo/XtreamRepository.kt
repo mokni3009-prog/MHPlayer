@@ -17,7 +17,13 @@ import com.mhplayer.app.data.model.SeriesItem
 import com.mhplayer.app.data.model.VodItem
 import com.mhplayer.app.data.session.SessionManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
@@ -46,6 +52,15 @@ class XtreamRepository(
         const val STEP_VOD = "vod"
         const val STEP_SERIES = "series"
         const val STEP_DONE = "done"
+
+        /** Overall guard for a full catalog load: it always ends (success or
+         *  clear error) within 3 minutes, never hangs forever (v1.4). */
+        const val LOAD_ALL_TIMEOUT_MS = 180_000L
+        /** Max concurrent per-category stream requests (v1.4 speed). */
+        const val MAX_PARALLEL_STREAMS = 6
+        /** Network retries per call, with exponential backoff (v1.4). */
+        const val RETRY_ATTEMPTS = 2
+        const val RETRY_BACKOFF_BASE_MS = 500L
     }
 
     // -- Auth -----------------------------------------------------------------
@@ -84,73 +99,159 @@ class XtreamRepository(
      * Fetches everything into Room: categories, then live / VOD / series
      * streams per category. Reports progress as (step, percent 0..100, message).
      * Steps: categories → live → vod → series → done.
+     *
+     * v1.4 — FAST + RESILIENT (fixes the loading screen stuck at 10%):
+     * - the 3 category lists are fetched IN PARALLEL (async), not one by one;
+     * - streams are fetched per category IN PARALLEL (max 6 concurrent),
+     *   not one category after another;
+     * - every call is retried twice on network errors (exponential backoff);
+     * - ONE failing category is SKIPPED (counted, load goes on) instead of
+     *   aborting the whole load; the load only fails when ALL THREE
+     *   category lists fail (server/auth problem -> error screen + retry);
+     * - an overall timeout (3 min) guarantees the load always ends
+     *   (success or clear error), never hangs forever.
+     * Progress callbacks run on Dispatchers.IO — callers must post them
+     * to the Main thread before touching Views.
      */
     suspend fun loadAll(progress: (step: String, percent: Int, message: String) -> Unit) {
         withContext(Dispatchers.IO) {
             requireCredentials()
 
-            progress(STEP_CATEGORIES, 2, "Chargement des catégories…")
-            val liveCategories = api.getLiveCategories()
-            val vodCategories = api.getVodCategories()
-            val seriesCategories = api.getSeriesCategories()
-            db.categoryDao().replaceForType(
-                CategoryType.LIVE,
-                liveCategories.map { it.toEntity(CategoryType.LIVE) },
-            )
-            db.categoryDao().replaceForType(
-                CategoryType.VOD,
-                vodCategories.map { it.toEntity(CategoryType.VOD) },
-            )
-            db.categoryDao().replaceForType(
-                CategoryType.SERIES,
-                seriesCategories.map { it.toEntity(CategoryType.SERIES) },
-            )
-            progress(STEP_CATEGORIES, 10, "Catégories chargées")
-
-            // Live channels (10% -> 45%).
-            progress(STEP_LIVE, 12, "Chargement des chaînes…")
-            val allLive = mutableListOf<LiveChannel>()
-            liveCategories.forEachIndexed { index, category ->
-                val streams = api.getLiveStreams(category.id)
-                db.liveChannelDao().replaceForCategory(
-                    category.id,
-                    streams.map { it.toEntity() },
+            withTimeout(LOAD_ALL_TIMEOUT_MS) {
+                progress(STEP_CATEGORIES, 2, "Chargement des catégories…")
+                val liveDeferred = async { runCatching { retryIo { api.getLiveCategories() } } }
+                val vodDeferred = async { runCatching { retryIo { api.getVodCategories() } } }
+                val seriesDeferred = async { runCatching { retryIo { api.getSeriesCategories() } } }
+                val liveCategories = liveDeferred.await().getOrDefault(emptyList())
+                val vodCategories = vodDeferred.await().getOrDefault(emptyList())
+                val seriesCategories = seriesDeferred.await().getOrDefault(emptyList())
+                if (liveCategories.isEmpty() && vodCategories.isEmpty() && seriesCategories.isEmpty()) {
+                    throw IOException("Échec du chargement des catégories")
+                }
+                db.categoryDao().replaceForType(
+                    CategoryType.LIVE,
+                    liveCategories.map { it.toEntity(CategoryType.LIVE) },
                 )
-                allLive += streams
-                val pct = 12 + (index + 1) * 33 / liveCategories.size.coerceAtLeast(1)
-                progress(STEP_LIVE, pct, "Chargement des chaînes… (${index + 1}/${liveCategories.size})")
-            }
-            session.setLastSyncMillis("live", System.currentTimeMillis())
-            progress(STEP_LIVE, 45, "Chaînes chargées (${allLive.size})")
+                db.categoryDao().replaceForType(
+                    CategoryType.VOD,
+                    vodCategories.map { it.toEntity(CategoryType.VOD) },
+                )
+                db.categoryDao().replaceForType(
+                    CategoryType.SERIES,
+                    seriesCategories.map { it.toEntity(CategoryType.SERIES) },
+                )
+                progress(STEP_CATEGORIES, 10, "Catégories chargées")
 
-            // VOD (45% -> 70%).
-            progress(STEP_VOD, 47, "Chargement des films…")
-            var vodCount = 0
-            vodCategories.forEachIndexed { index, category ->
-                val streams = api.getVodStreams(category.id)
-                db.vodDao().replaceForCategory(category.id, streams.map { it.toEntity() })
-                vodCount += streams.size
-                val pct = 47 + (index + 1) * 23 / vodCategories.size.coerceAtLeast(1)
-                progress(STEP_VOD, pct, "Chargement des films… (${index + 1}/${vodCategories.size})")
-            }
-            session.setLastSyncMillis("vod", System.currentTimeMillis())
-            progress(STEP_VOD, 70, "Films chargés ($vodCount)")
+                // Live channels (10% -> 45%): parallel, max 6 concurrent.
+                progress(STEP_LIVE, 12, "Chargement des chaînes…")
+                val liveCount = fetchStreamsParallel(
+                    items = liveCategories,
+                    fromPercent = 12,
+                    toPercent = 45,
+                    step = STEP_LIVE,
+                    label = "chaînes",
+                    progress = progress,
+                ) { category ->
+                    api.getLiveStreams(category.id).also { streams ->
+                        db.liveChannelDao().replaceForCategory(
+                            category.id,
+                            streams.map { it.toEntity() },
+                        )
+                    }.size
+                }
+                session.setLastSyncMillis("live", System.currentTimeMillis())
+                progress(STEP_LIVE, 45, "Chaînes chargées ($liveCount)")
 
-            // Series (70% -> 95%).
-            progress(STEP_SERIES, 72, "Chargement des séries…")
-            var seriesCount = 0
-            seriesCategories.forEachIndexed { index, category ->
-                val items = api.getSeries(category.id)
-                db.seriesDao().replaceForCategory(category.id, items.map { it.toEntity() })
-                seriesCount += items.size
-                val pct = 72 + (index + 1) * 23 / seriesCategories.size.coerceAtLeast(1)
-                progress(STEP_SERIES, pct, "Chargement des séries… (${index + 1}/${seriesCategories.size})")
-            }
-            session.setLastSyncMillis("series", System.currentTimeMillis())
-            progress(STEP_SERIES, 95, "Séries chargées ($seriesCount)")
+                // VOD (45% -> 70%).
+                progress(STEP_VOD, 47, "Chargement des films…")
+                val vodCount = fetchStreamsParallel(
+                    items = vodCategories,
+                    fromPercent = 47,
+                    toPercent = 70,
+                    step = STEP_VOD,
+                    label = "films",
+                    progress = progress,
+                ) { category ->
+                    api.getVodStreams(category.id).also { streams ->
+                        db.vodDao().replaceForCategory(category.id, streams.map { it.toEntity() })
+                    }.size
+                }
+                session.setLastSyncMillis("vod", System.currentTimeMillis())
+                progress(STEP_VOD, 70, "Films chargés ($vodCount)")
 
-            progress(STEP_DONE, 100, "Terminé")
+                // Series (70% -> 95%).
+                progress(STEP_SERIES, 72, "Chargement des séries…")
+                val seriesCount = fetchStreamsParallel(
+                    items = seriesCategories,
+                    fromPercent = 72,
+                    toPercent = 95,
+                    step = STEP_SERIES,
+                    label = "séries",
+                    progress = progress,
+                ) { category ->
+                    api.getSeries(category.id).also { items ->
+                        db.seriesDao().replaceForCategory(category.id, items.map { it.toEntity() })
+                    }.size
+                }
+                session.setLastSyncMillis("series", System.currentTimeMillis())
+                progress(STEP_SERIES, 95, "Séries chargées ($seriesCount)")
+
+                progress(STEP_DONE, 100, "Terminé")
+            }
         }
+    }
+
+    /**
+     * Fetches [fetcher] for every category IN PARALLEL (max [MAX_PARALLEL]
+     * concurrent requests). One failing category is skipped (returns 0 for
+     * it) so a single bad category never blocks the whole load. Progress
+     * advances as categories complete, in list order.
+     */
+    private suspend fun fetchStreamsParallel(
+        items: List<Category>,
+        fromPercent: Int,
+        toPercent: Int,
+        step: String,
+        label: String,
+        progress: (step: String, percent: Int, message: String) -> Unit,
+        fetcher: suspend (Category) -> Int,
+    ): Int = coroutineScope {
+        if (items.isEmpty()) return@coroutineScope 0
+        val semaphore = Semaphore(MAX_PARALLEL_STREAMS)
+        val jobs = items.map { category ->
+            async {
+                semaphore.withPermit {
+                    runCatching { retryIo { fetcher(category) } }.getOrDefault(0)
+                }
+            }
+        }
+        var total = 0
+        jobs.forEachIndexed { index, job ->
+            total += job.await()
+            val pct = fromPercent + (index + 1) * (toPercent - fromPercent) / items.size
+            progress(step, pct, "Chargement des $label… (${index + 1}/${items.size})")
+        }
+        total
+    }
+
+    /**
+     * Retries a network call up to [RETRY_ATTEMPTS] times on IOException
+     * (connect/read timeout, unreachable host) with exponential backoff.
+     * Non-IO exceptions (bad JSON, auth) are NOT retried — they fail fast.
+     */
+    private suspend fun <T> retryIo(times: Int = RETRY_ATTEMPTS, block: suspend () -> T): T {
+        var attempt = 0
+        var last: IOException? = null
+        while (attempt <= times) {
+            try {
+                return block()
+            } catch (e: IOException) {
+                last = e
+            }
+            attempt++
+            if (attempt <= times) delay(RETRY_BACKOFF_BASE_MS * attempt)
+        }
+        throw last ?: IOException("Network call failed")
     }
 
     // -- Room-first getters (network refresh when stale > 24h) -----------------

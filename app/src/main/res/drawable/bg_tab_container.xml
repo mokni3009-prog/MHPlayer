@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Segmented tab container (v1.4): dark pill holding the two tabs. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/color_input_modern_bg" />
+    <corners android:radius="14dp" />
+</shape>
