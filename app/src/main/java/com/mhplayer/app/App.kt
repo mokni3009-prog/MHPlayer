@@ -12,6 +12,7 @@ import com.mhplayer.app.player.DualEnginePlayer
 import com.mhplayer.app.player.EngineMode
 import com.mhplayer.app.player.ExoLivePlayer
 import com.mhplayer.app.player.VlcLivePlayer
+import com.mhplayer.app.util.CrashReporter
 import com.mhplayer.app.util.NetworkMonitor
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
@@ -94,6 +95,10 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // FIRST: install the crash reporter so any later startup crash is
+        // captured and sent to our server (it also uploads queued reports
+        // from a previous crashed run).
+        CrashReporter.install(this)
         networkMonitor.start()
     }
 }
