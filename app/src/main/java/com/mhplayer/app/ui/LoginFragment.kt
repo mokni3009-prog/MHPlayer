@@ -76,7 +76,8 @@ class LoginFragment : Fragment() {
         )
         binding.tabM3u.setBackgroundColor(
             requireContext().getColor(
-                if (m3u) android.R.color.transparent else 0xFF444444.toInt(),
+                if (m3u) android.R.color.transparent
+                else com.mhplayer.app.R.color.color_tab_inactive,
             ),
         )
         binding.loginFooter.text =
